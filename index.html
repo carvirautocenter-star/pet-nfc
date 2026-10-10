@@ -1,323 +1,539 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2563eb">
-<title>PET Tag NFC</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--p:#2563eb;--ph:#1d4ed8;--ok:#16a34a;--gps:#ea580c;--bg:#f1f5f9;--t:#0f172a;--s:#64748b;--b:#e2e8f0}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--t);padding-top:env(safe-area-inset-top)}
-#app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:calc(100px + env(safe-area-inset-bottom))}
-.hd{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:24px 20px 28px;border-radius:0 0 28px 28px;display:flex;justify-content:space-between;align-items:center}
-.hd h1{font-size:1.4rem;font-weight:800}.hd p{opacity:.85;font-size:.85rem;margin-top:2px}
-.ic{background:#ffffff26;border:0;border-radius:14px;width:46px;height:46px;font-size:1.2rem;cursor:pointer}
-main{padding:16px}
-.in,textarea{width:100%;padding:14px;border:1px solid var(--b);border-radius:14px;font-size:1rem;background:#fff;outline:0;resize:vertical}
-.in:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px #2563eb1a}
-.chips{display:flex;gap:8px;margin:12px 0}
-.chip{border:1px solid var(--b);background:#fff;border-radius:50px;padding:9px 16px;font-weight:600;font-size:.85rem;color:var(--s);cursor:pointer}
-.chip.on{background:var(--p);color:#fff;border-color:var(--p)}
-.row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px #0000000a;cursor:pointer}
-.row img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#dbeafe}
-.row div{flex:1;min-width:0}.row b{display:block}
-.row small{color:var(--s);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tag{font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:50px;background:#dbeafe;color:var(--ph)}
-.tag.crianca{background:#ffedd5;color:#c2410c}
-.empty{text-align:center;color:var(--s);padding:40px 10px}
-.fab{position:fixed;right:max(20px,calc(50% - 240px));bottom:calc(24px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;border:0;background:var(--p);color:#fff;font-size:2rem;box-shadow:0 10px 22px #2563eb55;cursor:pointer;z-index:5}
-#sh{display:none;position:fixed;inset:0;z-index:10}#sh.open{display:block}
-.bd{position:absolute;inset:0;background:#0f172a80}
-.pn{position:absolute;left:0;right:0;bottom:0;max-width:520px;margin:auto;max-height:92vh;overflow:auto;background:#fff;border-radius:26px 26px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));animation:up .25s}
-@keyframes up{from{transform:translateY(40px);opacity:0}}
-.pn h2{margin-bottom:14px;font-size:1.2rem}
-.b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:0;border-radius:14px;background:var(--b);color:var(--t);font-weight:700;font-size:.95rem;text-decoration:none;margin-top:8px;cursor:pointer}
-.b.p{background:var(--p);color:#fff}.b.ok{background:var(--ok);color:#fff}.b.gps{background:var(--gps);color:#fff}.b.d{background:#fee2e2;color:#dc2626}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
-.dh{display:flex;align-items:center;gap:14px;margin-bottom:14px}.dh img{width:68px;height:68px;border-radius:50%;object-fit:cover}
-.dh b{font-size:1.15rem;display:block}.dh small,.hint{color:var(--s);font-size:.8rem;line-height:1.4}
-.lk{background:#f8fafc;border:1px solid var(--b);border-radius:12px;padding:10px 12px;font-size:.8rem;word-break:break-all;margin:6px 0 4px;font-family:monospace;color:var(--p)}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.seg button{padding:12px;border-radius:14px;border:2px solid var(--b);background:#fff;font-weight:700;font-size:.95rem;cursor:pointer}
-.seg button.on{border-color:var(--p);background:#eff6ff;color:var(--ph)}
-.pf{display:flex;align-items:center;gap:14px;margin-bottom:14px}.pf img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid var(--b)}.pf div{flex:1}
-.fg{margin-bottom:14px}.fg label{display:block;font-size:.85rem;font-weight:700;color:var(--s);margin-bottom:6px}
-.pc{background:#fff;min-height:100vh}
-.hb{height:120px;background:linear-gradient(135deg,#2563eb,#1d4ed8)}.hb.k{background:linear-gradient(135deg,#ea580c,#c2410c)}
-.pp{padding:0 22px 32px;text-align:center}
-.av{width:140px;height:140px;border-radius:50%;border:5px solid #fff;object-fit:cover;margin:-70px auto 14px;display:block;background:#dbeafe;box-shadow:0 10px 20px #0000001a}
-.bg{display:inline-flex;align-items:center;gap:8px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;padding:7px 15px;border-radius:50px;font-size:.85rem;font-weight:700;margin-bottom:12px}
-.bg::before{content:'';width:8px;height:8px;border-radius:50%;background:#dc2626;animation:pl 1.5s infinite}
-@keyframes pl{50%{opacity:.35;transform:scale(1.3)}}
-.pp h1{font-size:1.9rem;font-weight:800;line-height:1.15}.sb{color:var(--s);margin:6px 0 20px}
-.ig{background:#f8fafc;border:1px solid var(--b);border-radius:18px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
-.ir{display:flex;gap:12px}.ir i{font-style:normal;width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--b);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ir small{color:var(--s);font-size:.8rem;font-weight:600;display:block}.ir span{font-weight:600;line-height:1.4}
-.ur{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:12px;font-size:.88rem;margin-bottom:12px;text-align:left}
-.nf{padding:60px 24px;text-align:center}.nf p{color:var(--s);margin-top:8px}
-pre{background:#0f172a;color:#38bdf8;padding:14px;border-radius:14px;font-size:.8rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;text-align:left;margin-top:8px}
-#toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 18px;border-radius:14px;font-size:.9rem;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
-#toast.on{opacity:1}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PET Tag NFC - Sistema de Identificação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-hover: #15803d;
+      --gps: #ea580c;
+      --gps-hover: #c2410c;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --subtext: #64748b;
+      --border: #e2e8f0;
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; padding-bottom: 90px; }
+
+    .container { width: 100%; max-width: 460px; margin: auto; position: relative; }
+    
+    /* CARTÃO PÚBLICO DE VISUALIZAÇÃO */
+    .pet-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.07), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.8);
+      position: relative;
+    }
+
+    .badge-status {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .badge-status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #dc2626;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .pet-header-bg {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      height: 110px;
+      width: 100%;
+    }
+    .pet-header-bg.crianca {
+      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    }
+
+    .pet-profile { padding: 0 24px 28px; text-align: center; }
+
+    .avatar-wrapper { position: relative; width: 130px; height: 130px; margin: -65px auto 16px; }
+
+    .pet-avatar {
+      width: 130px; height: 130px; border-radius: 50%; border: 4px solid #ffffff;
+      object-fit: cover; background: #dbeafe; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+
+    .pet-name { font-size: 1.75rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .pet-breed { color: var(--subtext); font-size: 0.95rem; font-weight: 500; margin-top: 4px; margin-bottom: 20px; }
+
+    .info-grid {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 18px;
+      padding: 16px; text-align: left; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .info-item { display: flex; align-items: flex-start; gap: 12px; }
+    .info-icon {
+      background: #ffffff; border: 1px solid var(--border); width: 36px; height: 36px;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--primary); font-style: normal;
+    }
+
+    .info-content { flex: 1; }
+    .info-label { font-size: 0.75rem; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-top: 2px; line-height: 1.4; }
+
+    .action-buttons { display: flex; flex-direction: column; gap: 10px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; border-radius: 16px; font-weight: 700; text-decoration: none;
+      font-size: 1rem; color: #ffffff; border: none; cursor: pointer; transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .btn-wsp { background: var(--success); }
+    .btn-wsp:hover { background: var(--success-hover); }
+    .btn-gps { background: var(--gps); }
+    .btn-gps:hover { background: var(--gps-hover); }
+    .btn-tel { background: var(--primary); }
+    .btn-tel:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-secondary:hover { background: #cbd5e1; }
+
+    /* PAINEL ADMIN */
+    .admin-card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .admin-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+
+    .pet-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+    .pet-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+    .pet-item-info { flex: 1; min-width: 140px; }
+    .pet-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
+    .pet-item-info span { font-size: 0.8rem; color: var(--subtext); }
+    .pet-item-actions { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+
+    /* BOTÃO FLUTUANTE DE NOVO CADASTRO */
+    .fab {
+      position: fixed; right: 20px; bottom: 24px; width: 60px; height: 60px;
+      border-radius: 50%; border: 0; background: var(--primary); color: #fff;
+      font-size: 2rem; box-shadow: 0 10px 22px rgba(37,99,235,0.4); cursor: pointer; z-index: 99;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* MODAL DESLIZANTE (FORMULÁRIO) */
+    #sh { display: none; position: fixed; inset: 0; z-index: 100; }
+    #sh.open { display: block; }
+    .bd { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); }
+    .pn {
+      position: absolute; left: 0; right: 0; bottom: 0; max-width: 460px; margin: auto;
+      max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 26px 26px 0 0;
+      padding: 24px 20px; animation: up .25s ease-out;
+    }
+    @keyframes up { from { transform: translateY(40px); opacity: 0; } }
+
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .seg button { padding: 12px; border-radius: 14px; border: 2px solid var(--border); background: #fff; font-weight: 700; cursor: pointer; }
+    .seg button.on { border-color: var(--primary); background: #eff6ff; color: var(--primary-hover); }
+
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--subtext); text-transform: uppercase; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; outline: none; background: #f8fafc; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); background: #ffffff; }
+
+    .file-box { background: #f1f5f9; padding: 12px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; font-size: 0.85rem; }
+    .file-name { font-family: monospace; font-weight: 700; color: var(--primary); margin-top: 4px; word-break: break-all; }
+
+    pre { background: #0f172a; color: #38bdf8; padding: 14px; border-radius: 14px; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin-top: 8px; text-align: left; }
+
+    #toast {
+      position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
+      background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 14px;
+      font-size: 0.9rem; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s;
+      max-width: 90%; text-align: center; font-weight: 600;
+    }
+    #toast.on { opacity: 1; }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-<div id="app"></div>
-<div id="toast"></div>
 
-<script>
-const $=id=>document.getElementById(id), K='pettag_v1';
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const L={pet:{raca:'Raça / espécie',dono:'Tutor(a)',vacinas:'Vacinas e saúde'},crianca:{raca:'Idade e descrição',dono:'Responsável',vacinas:'Saúde e alergias'}};
-const DEMO=()=>[
-  {id:'bob',tipo:'pet',emoji:'🐶',nome:'Bob Marley',raca:'Vira-lata caramelo',dono:'Carla Menezes',telefone:'11999990001',vacinas:'V10 e antirrábica em dia',observacoes:'Muito dócil, mas tem medo de fogos. Alergia a salsicha.',foto:''},
-  {id:'mel',tipo:'pet',emoji:'🐱',nome:'Mel',raca:'Gata siamesa',dono:'João Pereira',telefone:'21999990002',vacinas:'V4 em dia, castrada',observacoes:'Coleira azul com guizo. Nunca saiu de casa sozinha.',foto:''},
-  {id:'lucas',tipo:'crianca',emoji:'👦',nome:'Lucas Almeida',raca:'6 anos, camiseta azul',dono:'Ana Almeida (mãe)',telefone:'85999990003',vacinas:'Alergia a amendoim e asma leve',observacoes:'Pode ficar assustado e falar pouco. Converse com calma e fique com ele até a família chegar.',foto:''}
-];
+  <div class="container">
 
-let S={list:[],base:''}, cur, cid, ph='', tp='pet', filt='all', qs='';
+    <!-- CARTÃO DO PET (MODO PÚBLICO / NFC) -->
+    <div id="view-pet" class="pet-card hidden">
+      <div id="card-header-bg" class="pet-header-bg"></div>
+      <div class="pet-profile">
+        <div class="avatar-wrapper">
+          <img id="pet-foto" class="pet-avatar" src="" alt="Foto">
+        </div>
 
-try{
-  const stored = localStorage.getItem(K);
-  S = stored ? JSON.parse(stored) : {list: DEMO(), base: '', seeded: 1};
-}catch(e){
-  S = {list: DEMO(), base: '', seeded: 1};
-}
+        <div id="badge-tipo" class="badge-status">Pet Encontrado</div>
+        
+        <h1 id="pet-nome" class="pet-name">Carregando...</h1>
+        <p id="pet-raca" class="pet-breed">---</p>
 
-const save=()=>{
-  try{ localStorage.setItem(K, JSON.stringify(S)); }catch(e){}
-};
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">👤</div>
+            <div class="info-content">
+              <div id="lbl-dono" class="info-label">Tutor(a)</div>
+              <div id="pet-dono" class="info-value">---</div>
+            </div>
+          </div>
 
-let tt;
-const toast=m=>{const t=$('toast');if(!t)return;t.textContent=m;t.className='on';clearTimeout(tt);tt=setTimeout(()=>t.className='',3200)};
-const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const tel=s=>{const d=String(s||'').replace(/\D/g,'');return d.startsWith('55')&&d.length>11?d.slice(2):d};
-const av=r=>r.foto||'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#dbeafe"/><text x="50" y="68" font-size="54" text-anchor="middle">${r.emoji||(r.tipo=='crianca'?'🧒':'🐾')}</text></svg>`);
-const base=()=>{let b=S.base||location.href.split(/[?#]/)[0];return /\/$\vert{}\.html?$/.test(b)?b:b+'/'};
-const link=r=>base()+'?pet='+r.id;
-const enc=r=>btoa(unescape(encodeURIComponent(JSON.stringify([r.tipo=='crianca'?'c':'p',r.nome,r.raca,r.dono,tel(r.telefone),r.vacinas,r.observacoes])))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const dec=s=>{const a=JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/')))));return{tipo:a[0]=='c'?'crianca':'pet',nome:a[1],raca:a[2],dono:a[3],telefone:a[4],vacinas:a[5],observacoes:a[6]}};
-const auto=r=>base()+'#d='+enc(r);
-const url=(r,m)=>m?auto(r):link(r);
-const dl=(n,t)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'application/json'}));a.download=n;a.click()};
-const pure=r=>({tipo:r.tipo,nome:r.nome,raca:r.raca,foto:r.foto||'',dono:r.dono,telefone:r.telefone,vacinas:r.vacinas,observacoes:r.observacoes});
+          <div class="info-item">
+            <div class="info-icon">🩺</div>
+            <div class="info-content">
+              <div id="lbl-vacinas" class="info-label">Vacinas & Saúde</div>
+              <div id="pet-vacinas" class="info-value">---</div>
+            </div>
+          </div>
 
-function msg(r,loc){
-  const c=r.tipo=='crianca';
-  return `Olá, ${r.dono}! 👋\n\n`+(c?`⚠️ Encontrei *${r.nome}* e está comigo, em segurança. Fique tranquilo(a), vou ficar junto até vocês chegarem.`:`🐾 Encontrei *${r.nome}* e está comigo, em segurança.`)+(loc?`\n\n📍 Estamos aqui: ${loc}`:'')+`\n\nPode me responder por aqui para combinarmos o encontro?`;
-}
-const wa=(r,loc)=>`https://wa.me/55${tel(r.telefone)}?text=${encodeURIComponent(msg(r,loc))}`;
+          <div class="info-item">
+            <div class="info-icon">📝</div>
+            <div class="info-content">
+              <div class="info-label">Observações</div>
+              <div id="pet-obs" class="info-value">---</div>
+            </div>
+          </div>
+        </div>
 
-function admin(){
-  if(!S.list || !S.list.length){S.list=DEMO();S.seeded=1;save()}
-  $('app').style.padding='';$('app').innerHTML=`<header class="hd"><div><h1>PET Tag NFC</h1><p>${S.list.length} cadastro(s)</p></div><button class="ic" onclick="cfg()" aria-label="Configurações">⚙️</button></header>
-  <main><input id="bq" class="in" placeholder="🔍 Buscar por nome ou responsável" oninput="qs=this.value;lst()">
-  <div class="chips">${[['all','Todos'],['pet','Pets'],['crianca','Crianças']].map(([k,t])=>`<button class="chip ${filt==k?'on':''}" onclick="filt='${k}';admin()">${t}</button>`).join('')}</div><div id="lst"></div></main>
-  <button class="fab" onclick="form()" aria-label="Novo cadastro">＋</button>`;
-  $('bq').value=qs;lst();
-}
+        <div class="action-buttons">
+          <a id="btn-wsp" href="#" class="btn btn-wsp" target="_blank">💬 Falar no WhatsApp</a>
+          <button id="btn-gps" class="btn btn-gps" onclick="enviarLocalizacao()">
+            <span id="txt-gps">📍 Enviar Minha Localização GPS</span>
+          </button>
+          <a id="btn-tel" href="#" class="btn btn-tel">📞 Ligar para o Contato</a>
+          <a href="./" class="btn btn-secondary" style="margin-top:10px;">← Voltar ao Painel</a>
+        </div>
+      </div>
+    </div>
 
-function lst(){
-  const t=qs.toLowerCase();
-  const a=S.list.filter(r=>(filt=='all'||r.tipo==filt)&&(r.nome+' '+r.dono).toLowerCase().includes(t));
-  $('lst').innerHTML=a.length?a.map(r=>`<div class="row" onclick="det('${r.id}')"><img src="${av(r)}" alt=""><div><b>${esc(r.nome)}</b><small>${esc(r.raca)}</small><small>${esc(r.dono)}</small></div><span class="tag ${r.tipo}">${r.tipo=='crianca'?'Criança':'Pet'}</span></div>`).join(''):'<p class="empty">Nenhum cadastro por aqui. Toque em ＋ para criar o primeiro.</p>';
-}
+    <!-- PAINEL DE GERENCIAMENTO (ADMIN) -->
+    <div id="view-admin" class="hidden">
+      <div class="admin-card">
+        <div class="admin-title">Cadastros Ativos</div>
+        <div id="lista-pets">
+          <p style="font-size:0.85rem; color:var(--subtext);">Carregando lista...</p>
+        </div>
+      </div>
+      <button class="fab" onclick="abrirFormulario()" title="Novo Cadastro">＋</button>
+    </div>
 
-function sheet(h){
-  let s=$('sh');
-  if(!s){s=document.createElement('div');s.id='sh';document.body.appendChild(s)}
-  s.innerHTML=`<div class="bd" onclick="closeSh()"></div><div class="pn">${h}</div>`;
-  s.className='open';
-}
-const closeSh=()=>{const s=$('sh');if(s)s.className=''};
-
-function det(id){
-  const r=S.list.find(x=>x.id==id), A=auto(r);
-  sheet(`<div class="dh"><img src="${av(r)}" alt=""><div><b>${esc(r.nome)}</b><small>${esc(r.dono)}</small></div></div>
-  <div class="hint">Link público curto</div><div class="lk">${esc(link(r))}</div>
-  <button class="b p" onclick="nfc('${id}',0)">📲 Gravar link curto na tag NFC</button>
-  <button class="b" onclick="nfc('${id}',1)">📲 Gravar link autônomo (${A.length} caracteres)</button>
-  <p class="hint" style="margin-top:8px">O link curto carrega a foto, mas exige o arquivo JSON publicado no GitHub. O autônomo funciona sem GitHub e sem foto; cabe em tags NTAG215 ou NTAG216.</p>
-  <div class="g2"><button class="b" onclick="cp('${id}',0)">🔗 Copiar curto</button><button class="b" onclick="cp('${id}',1)">🧩 Copiar autônomo</button>
-  <a class="b" href="?pet=${id}" target="_blank">👁 Ver página</a><button class="b" onclick="dl('${id}.json',JSON.stringify(pure(S.list.find(x=>x.id=='${id}')),null,2));toast('Salve o arquivo na pasta pets/ do GitHub')">📄 JSON do GitHub</button>
-  <button class="b" onclick="form('${id}')">✏️ Editar</button><button class="b d" onclick="del('${id}')">🗑 Excluir</button></div>`);
-}
-
-async function cp(id,m){
-  const u=url(S.list.find(x=>x.id==id),m);
-  try{await navigator.clipboard.writeText(u);toast('Link copiado')}catch(e){prompt('Copie o link:',u)}
-}
-
-async function nfc(id,m){
-  const u=url(S.list.find(x=>x.id==id),m);
-  if(!('NDEFReader' in window))return toast('NFC indisponível. Abra no Chrome do Android, pelo endereço HTTPS do site.');
-  try{
-    toast('Aproxime a tag NFC do celular...');
-    await new NDEFReader().write({records:[{recordType:'url',data:u}]});
-    toast('✅ Tag gravada com sucesso');
-  }catch(e){
-    toast(e.name=='NotAllowedError'?'Permissão de NFC negada':'Não foi possível gravar. Se a tag for pequena (NTAG213), use o link curto.');
-  }
-}
-
-function del(id){
-  const r=S.list.find(x=>x.id==id);
-  if(!confirm(`Excluir ${r.nome}? O link e a tag NFC deixam de funcionar.`))return;
-  S.list=S.list.filter(x=>x.id!=id);
-  save();closeSh();admin();toast('Cadastro excluído');
-}
-
-function form(id){
-  const r=id?{...S.list.find(x=>x.id==id)}:{tipo:'pet'};
-  ph=r.foto||'';
-  fm(r,id);
-}
-
-function fm(r,id){
-  cid=id;tp=r.tipo||'pet';const l=L[tp];
-  const f=(k,t,p)=>`<div class="fg"><label>${t}</label>${k=='observacoes'?`<textarea id="i-${k}" rows="3" placeholder="${p}">${esc(r[k])}</textarea>`:`<input id="i-${k}" class="in" ${k=='telefone'?'inputmode="tel"':''} value="${esc(r[k])}" placeholder="${p}" ${k=='nome'?'oninput="updFile(this.value)"':''}>`}</div>`;
-  sheet(`<h2>${id?'Editar cadastro':'Novo cadastro'}</h2>
-  <div class="seg"><button class="${tp=='pet'?'on':''}" onclick="setTp('pet')">🐾 Pet</button><button class="${tp=='crianca'?'on':''}" onclick="setTp('crianca')">🧒 Criança</button></div>
-  <div class="pf"><img id="pv" src="${av({...r,foto:ph})}" alt=""><div><button class="b" style="margin:0 0 8px" onclick="$('f1').click()">🖼 Escolher da galeria</button><button class="b" style="margin:0" onclick="$('f2').click()">📷 Tirar foto</button></div></div>
-  <input type="file" id="f1" accept="image/*" hidden onchange="img(this)"><input type="file" id="f2" accept="image/*" capture="environment" hidden onchange="img(this)">
-  ${f('nome','Nome','ex: Bob Marley')}${f('raca',l.raca,tp=='pet'?'ex: Vira-lata caramelo':'ex: 6 anos, camiseta azul')}${f('dono',l.dono,'ex: Carla Menezes')}${f('telefone','WhatsApp com DDD','11999990001')}${f('vacinas',l.vacinas,tp=='pet'?'ex: V10 em dia':'ex: alergia a amendoim')}${f('observacoes','Observações importantes','ex: Muito dócil, tem medo de fogos')}
-  
-  <div style="background:#f1f5f9;padding:12px;border-radius:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
-    <div class="hint" style="font-weight:700;color:#2563eb;">📂 Arquivo do GitHub a ser criado:</div>
-    <div id="file-name-preview" class="lk" style="margin-top:4px;">pets/${cid || slug(r.nome||'nome-do-pet')}.json</div>
   </div>
 
-  <button class="b ok" onclick="sv()">Salvar cadastro</button><button class="b" onclick="closeSh()">Cancelar</button>
-  <div id="json-block" style="display:none;margin-top:12px">
-    <div class="hint">Copie o JSON abaixo e cole no arquivo criado:</div>
-    <pre id="json-preview"></pre>
-    <button class="b p" onclick="copyJson()">📋 Copiar código JSON</button>
-  </div>`);
-}
+  <!-- CONTAINER DO MODAL DESLIZANTE -->
+  <div id="sh"></div>
+  <div id="toast"></div>
 
-function updFile(v){
-  const s=cid || slug(v||'nome-do-pet');
-  if($('file-name-preview'))$('file-name-preview').innerText = `pets/${s}.json`;
-}
+  <script>
+    const K = 'pettag_v1';
+    let S = { list: [] };
+    let cur = null, cid = null, ph = '', tp = 'pet';
 
-function rd(){
-  const o={};
-  ['nome','raca','dono','telefone','vacinas','observacoes'].forEach(k=>o[k]=$('i-'+k).value.trim());
-  o.foto=ph;o.tipo=tp;
-  return o;
-}
+    // DADOS INICIAIS DE EXEMPLO
+    const DEMO = [
+      { id: 'bob', tipo: 'pet', nome: 'Bob Marley', raca: 'Vira-lata caramelo', dono: 'Dimas Galdino', telefone: '83998766020', vacinas: 'V10 e antirrábica em dia', observacoes: 'Muito dócil, mas tem medo de fogos. Alergia a salsicha.', foto: '' },
+      { id: 'mel', tipo: 'pet', nome: 'Mel', raca: 'Gata siamesa', dono: 'João Pereira', telefone: '83999990002', vacinas: 'V4 em dia, castrada', observacoes: 'Coleira azul com guizo.', foto: '' },
+      { id: 'lucas', tipo: 'crianca', nome: 'Lucas Almeida', raca: '6 anos, camiseta azul', dono: 'Ana Almeida (mãe)', telefone: '85999990003', vacinas: 'Alergia a amendoim', observacoes: 'Pode ficar assustado. Fique com ele até a família chegar.', foto: '' }
+    ];
 
-function setTp(t){const o=rd();o.tipo=t;fm(o,cid)}
+    // SUPORTE COMPLETO A ABAS ANÔNIMAS (TRY/CATCH LOCALSTORAGE)
+    try {
+      const saved = localStorage.getItem(K);
+      if (saved) {
+        S = JSON.parse(saved);
+      } else {
+        S.list = DEMO;
+        localStorage.setItem(K, JSON.stringify(S));
+      }
+    } catch(e) {
+      S.list = DEMO;
+    }
 
-function img(inp){
-  const f=inp.files[0];if(!f)return;
-  const fr=new FileReader();
-  fr.onload=e=>{
-    const i=new Image();
-    i.onload=()=>{
-      const k=Math.min(1,420/Math.max(i.width,i.height)),c=document.createElement('canvas');
-      c.width=i.width*k;c.height=i.height*k;
-      c.getContext('2d').drawImage(i,0,0,c.width,c.height);
-      ph=c.toDataURL('image/jpeg',.75);
-      $('pv').src=ph;
-    };
-    i.src=e.target.result;
-  };
-  fr.readAsDataURL(f);
-}
+    function salvarCache() {
+      try { localStorage.setItem(K, JSON.stringify(S)); } catch(e){}
+    }
 
-function sv(){
-  const o=rd();
-  if(!o.nome||!o.dono||tel(o.telefone).length<10)return toast('Preencha nome, responsável e WhatsApp com DDD');
-  o.telefone=tel(o.telefone);
-  if(cid){
-    const i=S.list.findIndex(x=>x.id==cid);
-    o.id=cid;
-    if(S.list[i].emoji)o.emoji=S.list[i].emoji;
-    S.list[i]=o;
-  } else {
-    const b=slug(o.nome)||'cadastro';
-    let id=b,n=2;
-    while(S.list.some(x=>x.id==id))id=b+'-'+n++;
-    o.id=id;
-    S.list.unshift(o);
-  }
-  save();
-  
-  $('json-preview').innerText = JSON.stringify(pure(o), null, 2);$('json-block').style.display = 'block';
-  toast('Cadastro salvo!');
-}
+    let tt;
+    function toast(m) {
+      const t = document.getElementById('toast');
+      t.textContent = m;
+      t.className = 'on';
+      clearTimeout(tt);
+      tt = setTimeout(() => t.className = '', 3200);
+    }
 
-function copyJson(){
-  const code = $('json-preview').innerText;
-  navigator.clipboard.writeText(code);
-  toast('JSON copiado!');
-}
+    const slug = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const tel = s => { const d = String(s || '').replace(/\D/g, ''); return d.startsWith('55') && d.length > 11 ? d.slice(2) : d; };
 
-function cfg(){
-  sheet(`<h2>Configurações</h2>
-  <div class="fg"><label>Endereço do seu site (GitHub Pages / Vercel)</label><input id="cb" class="in" value="${esc(S.base)}" placeholder="https://seu-app.vercel.app/"><p class="hint" style="margin-top:6px">Os links e as tags usam este endereço.</p></div>
-  <button class="b p" onclick="S.base=$('cb').value.trim();save();closeSh();toast('Endereço salvo')">Salvar endereço</button>
-  <button class="b" onclick="dl('pet-tag-backup.json',JSON.stringify(S.list))">💾 Exportar backup</button>
-  <button class="b" onclick="$('imp').click()">📂 Importar backup</button><input type="file" id="imp" accept=".json" hidden onchange="imp(this)">
-  <button class="b" onclick="DEMO().forEach(d=>{if(!S.list.some(x=>x.id==d.id))S.list.push(d)});save();closeSh();admin();toast('Exemplos restaurados')">🐾 Restaurar exemplos fictícios</button>`);
-}
+    const params = new URLSearchParams(window.location.search);
+    const petId = params.get('pet');
 
-function imp(i){
-  const f=i.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const a=JSON.parse(e.target.result);
-      if(!Array.isArray(a))throw 0;
-      S.list=a;save();closeSh();admin();toast('Backup importado');
-    }catch(x){toast('Arquivo de backup inválido')}
-  };
-  r.readAsText(f);
-}
+    if (petId) {
+      document.getElementById('view-pet').classList.remove('hidden');
+      carregarPaginaPublica(petId);
+    } else {
+      document.getElementById('view-admin').classList.remove('hidden');
+      carregarPainel();
+    }
 
-function card(p){
-  p.tipo=p.tipo||'pet';
-  cur=p;
-  const c=p.tipo=='crianca', l=L[p.tipo];
-  document.title=p.nome+' foi encontrado(a)';
-  const row=(i,t,v)=>`<div class="ir"><i>${i}</i><div><small>${t}</small><span>${esc(v)}</span></div></div>`;
-  $('app').style.padding='0';$('app').innerHTML=`<div class="pc"><div class="hb ${c?'k':''}"></div><div class="pp"><img class="av" src="${av(p)}" alt="Foto de ${esc(p.nome)}">
-  <span class="bg">${c?'Criança encontrada':'Pet encontrado'}</span><h1>${esc(p.nome)}</h1><p class="sb">${esc(p.raca||'')}</p>
-  <div class="ig">${row('👤',l.dono,p.dono)}${row('🩺',l.vacinas,p.vacinas||'Não informado')}${row('📝','Observações',p.observacoes||'Nenhuma')}</div>
-  ${c?'<p class="ur">Fique com a criança em um lugar seguro e movimentado. Em caso de risco ou emergência, ligue 190.</p>':''}
-  <a class="b ok" href="${wa(p)}" target="_blank">💬 Avisar no WhatsApp</a>
-  <button id="gt" class="b gps" onclick="gps()">📍 Enviar minha localização</button>
-  <a class="b p" href="tel:${tel(p.telefone)}">📞 Ligar para ${esc(l.dono.split(' ')[0].replace(/\(.*/,''))}</a></div></div>`;
-}
+    function carregarPaginaPublica(id) {
+      let pet = S.list.find(x => x.id === id.toLowerCase());
 
-function gps(){
-  const b=$('gt'), r=()=>b.textContent='📍 Enviar minha localização';
-  if(!navigator.geolocation)return toast('Seu navegador não tem GPS');
-  b.textContent='Obtendo localização...';
-  navigator.geolocation.getCurrentPosition(s=>{
-    r();
-    location.href=wa(cur,`https://maps.google.com/?q=${s.coords.latitude},${s.coords.longitude}`);
-  },e=>{
-    r();
-    toast(e.code==1?'Permita o acesso à localização nas configurações do navegador':'Não foi possível obter o GPS. Confira se ele está ligado.');
-  },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
-}
+      if (pet) {
+        exibirDadosCard(pet);
+      } else {
+        fetch(`pets/${id.toLowerCase()}.json`)
+          .then(res => { if(!res.ok) throw new Error(); return res.json(); })
+          .then(data => exibirDadosCard(data))
+          .catch(() => {
+            document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Cadastro não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o arquivo <code>pets/${id}.json</code> existe no GitHub.</p><br><a href="./" class="btn btn-secondary">Voltar ao Painel</a></div>`;
+          });
+      }
+    }
 
-function pub(){
-  const id=(q.get('pet')||'').toLowerCase(), d=H.get('d');
-  let p=null;
-  if(d){try{p=dec(d)}catch(e){}}else p=(S.list||[]).find(x=>x.id==id);
-  if(p)return card(p);
-  if(d)return nf();
-  fetch('pets/'+encodeURIComponent(id)+'.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(card).catch(nf);
-}
+    function exibirDadosCard(pet) {
+      cur = pet;
+      const isCrianca = pet.tipo === 'crianca';
+      const tPhone = tel(pet.telefone);
 
-const nf=()=>$('app').innerHTML='<div class="nf"><h1>Cadastro não encontrado</h1><p>Este link ou tag NFC não está mais ativo. Se encontrou um pet ou uma criança, procure ajuda pelo 190.</p></div>';
+      document.getElementById('pet-nome').innerText = pet.nome;
+      document.getElementById('pet-raca').innerText = pet.raca || (isCrianca ? 'Idade/Descrição não informada' : 'Sem raça definida');
+      document.getElementById('pet-foto').src = pet.foto || (isCrianca ? 'https://via.placeholder.com/150/ffedd5/c2410c?text=Criança' : 'https://via.placeholder.com/150/dbeafe/1d4ed8?text=Pet');
+      document.getElementById('pet-dono').innerText = pet.dono;
+      document.getElementById('pet-vacinas').innerText = pet.vacinas || 'Não informada';
+      document.getElementById('pet-obs').innerText = pet.observacoes || 'Nenhuma';
 
-const q=new URLSearchParams(location.search), H=new URLSearchParams(location.hash.slice(1));
-(q.get('pet')||H.get('d'))?pub():admin();
-</script>
+      document.getElementById('badge-tipo').innerText = isCrianca ? 'Criança Encontrada' : 'Pet Encontrado';
+      document.getElementById('lbl-dono').innerText = isCrianca ? 'Responsável' : 'Tutor(a)';
+      document.getElementById('lbl-vacinas').innerText = isCrianca ? 'Saúde e Alergias' : 'Vacinas & Saúde';
+
+      if (isCrianca) {
+        document.getElementById('card-header-bg').classList.add('crianca');
+      }
+
+      const msgWsp = isCrianca 
+        ? `Olá, ${pet.dono}! Encontrei ${pet.nome} e está comigo em segurança. Gostaria de combinar o encontro!`
+        : `Olá! Encontrei o pet ${pet.nome} pertencente a ${pet.dono}. Gostaria de combinar a entrega!`;
+
+      document.getElementById('btn-wsp').href = `https://wa.me/55${tPhone}?text=${encodeURIComponent(msgWsp)}`;
+      document.getElementById('btn-tel').href = `tel:${tPhone}`;
+    }
+
+    function carregarPainel() {
+      const container = document.getElementById('lista-pets');
+      const baseUrl = window.location.origin + window.location.pathname;
+      container.innerHTML = '';
+
+      if (!S.list.length) {
+        container.innerHTML = '<p style="font-size:0.85rem; color:var(--subtext);">Nenhum cadastro atalho no painel. Clique no ＋ para criar.</p>';
+        return;
+      }
+
+      S.list.forEach(pet => {
+        const linkNfc = `${baseUrl}?pet=${pet.id}`;
+        const isCrianca = pet.tipo === 'crianca';
+        const html = `
+          <div class="pet-item">
+            <img src="${pet.foto || (isCrianca ? 'https://via.placeholder.com/50/ffedd5/c2410c?text=🧒' : 'https://via.placeholder.com/50/dbeafe/1d4ed8?text=🐾')}" alt="${pet.nome}">
+            <div class="pet-item-info">
+              <strong>${pet.nome} (${pet.id})</strong>
+              <span>${isCrianca ? 'Resp:' : 'Tutor:'} ${pet.dono}</span>
+            </div>
+            <div class="pet-item-actions">
+              <a href="?pet=${pet.id}" class="btn btn-tel" style="padding:8px 12px; font-size:0.8rem; flex:1;">Ver Cartão</a>
+              <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')" style="padding:8px 12px; font-size:0.8rem; flex:1;">Copiar Link</button>
+            </div>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+
+    function copiarLink(link) {
+      navigator.clipboard.writeText(link);
+      toast("Link copiado para a Tag NFC!");
+    }
+
+    // ABRIR FORMULÁRIO EM MODAL DESLIZANTE
+    function abrirFormulario(id) {
+      const pet = id ? S.list.find(x => x.id === id) : { tipo: 'pet', nome: '', raca: '', dono: '', telefone: '', vacinas: '', observacoes: '', foto: '' };
+      cid = id;
+      tp = pet.tipo || 'pet';
+      ph = pet.foto || '';
+
+      const sheet = document.getElementById('sh');
+      sheet.innerHTML = `
+        <div class="bd" onclick="fecharFormulario()"></div>
+        <div class="pn">
+          <h2 style="margin-bottom:14px; font-size:1.2rem;">${id ? 'Editar Cadastro' : 'Novo Cadastro'}</h2>
+          
+          <div class="seg">
+            <button class="${tp === 'pet' ? 'on' : ''}" onclick="alternarTipo('pet')">🐾 Pet</button>
+            <button class="${tp === 'crianca' ? 'on' : ''}" onclick="alternarTipo('crianca')">🧒 Criança</button>
+          </div>
+
+          <div class="form-group">
+            <label>Nome:</label>
+            <input type="text" id="in-nome" value="${pet.nome}" placeholder="ex: Bob Marley" oninput="atualizarNomeArquivo(this.value)">
+          </div>
+
+          <div class="file-box">
+            <div style="font-weight:700; color:var(--primary);">📂 Nome do Arquivo no GitHub:</div>
+            <div id="file-name-preview" class="file-name">pets/${cid || slug(pet.nome || 'nome-do-cadastro')}.json</div>
+          </div>
+
+          <div class="form-group">
+            <label>${tp === 'crianca' ? 'Idade / Descrição:' : 'Raça:'}</label>
+            <input type="text" id="in-raca" value="${pet.raca}" placeholder="${tp === 'crianca' ? 'ex: 6 anos, camiseta azul' : 'ex: Vira-lata'}">
+          </div>
+
+          <div class="form-group">
+            <label>${tp === 'crianca' ? 'Responsável:' : 'Nome do Tutor(a):'}</label>
+            <input type="text" id="in-dono" value="${pet.dono}" placeholder="ex: Dimas Galdino">
+          </div>
+
+          <div class="form-group">
+            <label>WhatsApp (com DDD):</label>
+            <input type="text" id="in-telefone" value="${pet.telefone}" placeholder="83998766020">
+          </div>
+
+          <div class="form-group">
+            <label>${tp === 'crianca' ? 'Saúde e Alergias:' : 'Vacinas & Saúde:'}</label>
+            <input type="text" id="in-vacinas" value="${pet.vacinas}" placeholder="${tp === 'crianca' ? 'ex: Alergia a amendoim' : 'ex: V10 em dia'}">
+          </div>
+
+          <div class="form-group">
+            <label>Observações Importantes:</label>
+            <textarea id="in-obs" rows="2" placeholder="ex: Muito dócil.">${pet.observacoes}</textarea>
+          </div>
+
+          <button class="btn btn-wsp" onclick="salvarCadastro()">Salvar e Gerar Código JSON</button>
+          <button class="btn btn-secondary" onclick="fecharFormulario()" style="margin-top:8px;">Cancelar</button>
+
+          <div id="bloco-json" class="hidden" style="margin-top:16px;">
+            <p style="font-size:0.8rem; color:var(--subtext); font-weight:700;">Copie o código abaixo e crie o arquivo na pasta <code>pets/</code> do GitHub:</p>
+            <pre id="codigo-json"></pre>
+            <button class="btn btn-tel" onclick="copiarJson()" style="margin-top:8px;">📋 Copiar Código JSON</button>
+          </div>
+        </div>
+      `;
+      sheet.classList.add('open');
+    }
+
+    function fecharFormulario() {
+      document.getElementById('sh').classList.remove('open');
+    }
+
+    function alternarTipo(tipo) {
+      tp = tipo;
+      abrirFormulario(cid);
+    }
+
+    function atualizarNomeArquivo(val) {
+      const fileName = cid || slug(val || 'nome-do-cadastro');
+      document.getElementById('file-name-preview').innerText = `pets/${fileName}.json`;
+    }
+
+    function salvarCadastro() {
+      const nome = document.getElementById('in-nome').value.trim();
+      const dono = document.getElementById('in-dono').value.trim();
+      const telefone = tel(document.getElementById('in-telefone').value);
+
+      if (!nome || !dono || telefone.length < 10) {
+        toast("Preencha Nome, Responsável e WhatsApp com DDD!");
+        return;
+      }
+
+      const id = cid || slug(nome);
+      const novoObjeto = {
+        tipo: tp,
+        nome: nome,
+        raca: document.getElementById('in-raca').value.trim(),
+        dono: dono,
+        telefone: telefone,
+        vacinas: document.getElementById('in-vacinas').value.trim(),
+        observacoes: document.getElementById('in-obs').value.trim(),
+        foto: ph
+      };
+
+      const idx = S.list.findIndex(x => x.id === id);
+      if (idx >= 0) {
+        S.list[idx] = { id, ...novoObjeto };
+      } else {
+        S.list.unshift({ id, ...novoObjeto });
+      }
+
+      salvarCache();
+      carregarPainel();
+
+      const jsonString = JSON.stringify(novoObjeto, null, 2);
+      document.getElementById('codigo-json').innerText = jsonString;
+      document.getElementById('bloco-json').classList.remove('hidden');
+
+      toast("Cadastro salvo no navegador!");
+    }
+
+    function copiarJson() {
+      const code = document.getElementById('codigo-json').innerText;
+      navigator.clipboard.writeText(code);
+      toast("Código JSON copiado!");
+    }
+
+    function enviarLocalizacao() {
+      const btnText = document.getElementById('txt-gps');
+      btnText.innerText = "Obtendo GPS...";
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            btnText.innerText = "Enviar Minha Localização GPS";
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const linkMaps = `https://maps.google.com/?q=${lat},${lng}`;
+            const isCrianca = cur && cur.tipo === 'crianca';
+            const msg = isCrianca 
+              ? `Olá! Encontrei ${cur.nome}! Minha localização atual é: ${linkMaps}`
+              : `Olá! Encontrei o pet ${cur.nome}! Minha localização atual é: ${linkMaps}`;
+            window.open(`https://wa.me/55${tel(cur.telefone)}?text=${encodeURIComponent(msg)}`, '_blank');
+          },
+          (error) => {
+            btnText.innerText = "Enviar Minha Localização GPS";
+            toast("Ative a localização no seu navegador.");
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else {
+        btnText.innerText = "Enviar Minha Localização GPS";
+        toast("Navegador sem suporte a GPS.");
+      }
+    }
+  </script>
 </body>
 </html>
