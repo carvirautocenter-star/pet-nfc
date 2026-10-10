@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PET Tag NFC - Sistema de Identificação</title>
-  <!-- Fonte Inter Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +29,6 @@
 
     .container { width: 100%; max-width: 460px; margin: auto; }
     
-    /* CARTÃO DE PET PREMIUM */
     .pet-card {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -103,7 +101,6 @@
     .pet-name { font-size: 1.75rem; font-weight: 800; color: var(--text); line-height: 1.2; }
     .pet-breed { color: var(--subtext); font-size: 0.95rem; font-weight: 500; margin-top: 4px; margin-bottom: 20px; }
 
-    /* BOX DE INFORMAÇÕES */
     .info-grid {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -139,7 +136,6 @@
     .info-label { font-size: 0.75rem; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px; }
     .info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-top: 2px; line-height: 1.4; }
 
-    /* BOTÕES DE AÇÃO */
     .action-buttons { display: flex; flex-direction: column; gap: 10px; }
 
     .btn {
@@ -172,7 +168,6 @@
     .btn-secondary { background: #e2e8f0; color: var(--text); }
     .btn-secondary:hover { background: #cbd5e1; }
 
-    /* PAINEL ADMIN */
     .admin-card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .admin-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
     
@@ -183,11 +178,12 @@
     
     .preview-img-upload { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-top: 10px; border: 2px dashed var(--border); display: block; }
 
-    .pet-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; }
+    .pet-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; flex-wrap: wrap; }
     .pet-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-    .pet-item-info { flex: 1; }
+    .pet-item-info { flex: 1; min-width: 140px; }
     .pet-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
     .pet-item-info span { font-size: 0.8rem; color: var(--subtext); }
+    .pet-item-actions { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
 
     pre { background: #0f172a; color: #38bdf8; padding: 16px; border-radius: 14px; overflow-x: auto; font-size: 0.8rem; text-align: left; margin-top: 12px; white-space: pre-wrap; word-break: break-all; }
     .hidden { display: none !important; }
@@ -197,7 +193,7 @@
 
   <div class="container">
 
-    <!-- VISUALIZAÇÃO DO PET (MODO NFC) -->
+    <!-- CARTÃO DO PET (MODO NFC OU CLIQUE DIRETO) -->
     <div id="view-pet" class="pet-card hidden">
       <div class="pet-header-bg"></div>
       <div class="pet-profile">
@@ -257,18 +253,22 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
             Ligar para o Tutor
           </a>
+          
+          <a href="./" class="btn btn-secondary" style="margin-top:10px;">
+            ← Voltar ao Painel
+          </a>
         </div>
       </div>
     </div>
 
-    <!-- PAINEL GERENCIADOR (ADMIN) -->
+    <!-- PAINEL DE GERENCIAMENTO (ADMIN) -->
     <div id="view-admin" class="hidden">
       
-      <!-- LISTA DOS PETS CADASTRADOS -->
+      <!-- LISTA DE PETS -->
       <div class="admin-card">
         <div class="admin-title">Pets Cadastrados</div>
         <div id="lista-pets">
-          <p style="font-size:0.85rem; color:var(--subtext);">A carregar lista de pets...</p>
+          <p style="font-size:0.85rem; color:var(--subtext);">Buscando pets na pasta...</p>
         </div>
       </div>
 
@@ -276,11 +276,11 @@
       <div class="admin-card">
         <div class="admin-title">Cadastrar Novo Pet</div>
         <p style="font-size:0.85rem; color:var(--subtext); margin-bottom:16px;">
-          Preencha os dados abaixo para gerar o ficheiro <code>.json</code>. Depois, crie o ficheiro dentro da pasta <code>pets/</code> no GitHub.
+          Preencha os dados abaixo para gerar o arquivo <code>.json</code>. Depois crie o arquivo dentro da pasta <code>pets/</code> no GitHub.
         </p>
         <form id="form-pet" onsubmit="gerarArquivoJson(event)">
           <div class="form-group">
-            <label>ID / Nome do Ficheiro (ex: bob):</label>
+            <label>ID / Nome do Arquivo (ex: bob):</label>
             <input type="text" id="in-id" required placeholder="ex: bob">
           </div>
           
@@ -326,7 +326,7 @@
 
         <div id="bloco-codigo" class="hidden">
           <p style="font-size:0.85rem; color:var(--subtext); margin-top:16px;">
-            Copie o código abaixo e crie um ficheiro chamado <code id="nome-arquivo-sugerido">pet.json</code> na pasta <code>pets/</code> no GitHub:
+            Copie o código abaixo e crie um arquivo chamado <code id="nome-arquivo-sugerido">pet.json</code> na pasta <code>pets/</code> no GitHub:
           </p>
           <pre id="codigo-gerado"></pre>
           <button class="btn btn-secondary" onclick="copiarCodigo()" style="margin-top:8px;">Copiar JSON</button>
@@ -338,8 +338,8 @@
   </div>
 
   <script>
-    // LISTA DE PETS REGISTADOS (Adicione o ID do ficheiro aqui para aparecer na lista do painel)
-    const listaPetsRegistados = ["bob", "thor"];
+    // LISTA DE PETS (Coloque o nome dos arquivos que você criou aqui)
+    const petsCadastrados = ["bob", "thor"];
 
     let telefonePetAtual = "";
     let nomePetAtual = "";
@@ -374,21 +374,21 @@
           document.getElementById('btn-tel').href = `tel:${telefonePetAtual}`;
         })
         .catch(() => {
-          document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Pet não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o ficheiro <code>pets/${petId}.json</code> existe no GitHub.</p></div>`;
+          document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Pet não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o arquivo <code>pets/${petId}.json</code> existe no GitHub.</p><br><a href="./" class="btn btn-secondary">Voltar ao Painel</a></div>`;
         });
 
     } else {
       document.getElementById('view-admin').classList.remove('hidden');
-      carregarListaAdmin();
+      carregarPetsNoPainel();
     }
 
-    // CARREGA VISUALMENTE A LISTA DE PETS NO PAINEL ADMIN
-    function carregarListaAdmin() {
+    // CARREGA OS CARDS E BOTÕES "VER CARTÃO" E "COPIAR LINK"
+    function carregarPetsNoPainel() {
       const container = document.getElementById('lista-pets');
       const baseUrl = window.location.origin + window.location.pathname;
       container.innerHTML = '';
 
-      listaPetsRegistados.forEach(id => {
+      petsCadastrados.forEach(id => {
         fetch(`pets/${id}.json`)
           .then(res => res.json())
           .then(pet => {
@@ -400,20 +400,23 @@
                   <strong>${pet.nome} (${id})</strong>
                   <span>Tutor: ${pet.dono}</span>
                 </div>
-                <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')" style="width:auto; padding:8px 12px; font-size:0.8rem;">Copiar Link</button>
+                <div class="pet-item-actions">
+                  <a href="?pet=${id}" class="btn btn-tel" style="padding:8px 12px; font-size:0.8rem; flex:1;">Ver Cartão</a>
+                  <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')" style="padding:8px 12px; font-size:0.8rem; flex:1;">Copiar Link</button>
+                </div>
               </div>
             `;
             container.innerHTML += html;
           })
           .catch(() => {
-            // Se o ficheiro ainda não existir no GitHub, apenas ignora
+            // Se o arquivo ainda não existir no GitHub, apenas ignora
           });
       });
     }
 
     function copiarLink(link) {
       navigator.clipboard.writeText(link);
-      alert("Link copiado para a gravação da Tag NFC!");
+      alert("Link copiado para a gravação da Tag NFC!\n\n" + link);
     }
 
     function converterImagemParaBase64(input) {
@@ -492,7 +495,7 @@
     function copiarCodigo() {
       const codigo = document.getElementById('codigo-gerado').innerText;
       navigator.clipboard.writeText(codigo);
-      alert("JSON copiado! Crie o ficheiro na pasta pets/ do GitHub e cole.");
+      alert("JSON copiado! Crie o arquivo na pasta pets/ do GitHub e cole.");
     }
   </script>
 </body>
