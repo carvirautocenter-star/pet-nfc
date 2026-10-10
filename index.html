@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>PET Tag NFC - Sistema de Identificação</title>
+  <title>PET Tag NFC - Painel de Controle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,366 +13,314 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --success: #16a34a;
-      --success-hover: #15803d;
       --gps: #ea580c;
-      --gps-hover: #c2410c;
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --subtext: #64748b;
       --border: #e2e8f0;
-      --radius: 24px;
+      --radius: 20px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; padding-bottom: 90px; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; }
 
-    .container { width: 100%; max-width: 460px; margin: auto; position: relative; }
-    
-    /* CARTÃO PÚBLICO DE VISUALIZAÇÃO */
-    .pet-card {
+    .app-viewport { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); position: relative; padding: 16px; padding-bottom: 100px; }
+
+    /* CABEÇALHO DO PAINEL */
+    .header-app { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 8px 4px; }
+    .header-app h1 { font-size: 1.4rem; font-weight: 800; color: var(--text); }
+    .header-app p { font-size: 0.85rem; color: var(--subtext); font-weight: 500; }
+
+    /* LISTA DE CARDS */
+    .pet-card-item {
       background: var(--card-bg);
       border-radius: var(--radius);
-      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.07), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.8);
-      position: relative;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .badge-status {
-      background: rgba(239, 68, 68, 0.15);
-      color: #dc2626;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 6px 14px;
-      border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 12px;
+    .pet-info-row { display: flex; align-items: center; gap: 14px; }
+    .pet-avatar-thumb {
+      width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+      background: #dbeafe; border: 2px solid #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0;
     }
+    .pet-details { flex: 1; min-width: 0; }
+    .pet-details strong { font-size: 1.05rem; font-weight: 700; color: var(--text); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pet-details span { font-size: 0.85rem; color: var(--subtext); font-weight: 500; display: block; margin-top: 2px; }
 
-    .badge-status::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: #dc2626;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .pet-header-bg {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      height: 110px;
-      width: 100%;
-    }
-    .pet-header-bg.crianca {
-      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
-    }
-
-    .pet-profile { padding: 0 24px 28px; text-align: center; }
-
-    .avatar-wrapper { position: relative; width: 130px; height: 130px; margin: -65px auto 16px; }
-
-    .pet-avatar {
-      width: 130px; height: 130px; border-radius: 50%; border: 4px solid #ffffff;
-      object-fit: cover; background: #dbeafe; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-
-    .pet-name { font-size: 1.75rem; font-weight: 800; color: var(--text); line-height: 1.2; }
-    .pet-breed { color: var(--subtext); font-size: 0.95rem; font-weight: 500; margin-top: 4px; margin-bottom: 20px; }
-
-    .info-grid {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 18px;
-      padding: 16px; text-align: left; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;
-    }
-
-    .info-item { display: flex; align-items: flex-start; gap: 12px; }
-    .info-icon {
-      background: #ffffff; border: 1px solid var(--border); width: 36px; height: 36px;
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; color: var(--primary); font-style: normal;
-    }
-
-    .info-content { flex: 1; }
-    .info-label { font-size: 0.75rem; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.5px; }
-    .info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-top: 2px; line-height: 1.4; }
-
-    .action-buttons { display: flex; flex-direction: column; gap: 10px; }
+    /* BOTÕES AÇÃO NO LISTITEM */
+    .pet-item-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; padding: 16px; border-radius: 16px; font-weight: 700; text-decoration: none;
-      font-size: 1rem; color: #ffffff; border: none; cursor: pointer; transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 14px; border-radius: 12px; font-weight: 700; text-decoration: none;
+      font-size: 0.88rem; border: none; cursor: pointer; transition: all 0.2s ease;
     }
-
-    .btn-wsp { background: var(--success); }
-    .btn-wsp:hover { background: var(--success-hover); }
-    .btn-gps { background: var(--gps); }
-    .btn-gps:hover { background: var(--gps-hover); }
-    .btn-tel { background: var(--primary); }
-    .btn-tel:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #e2e8f0; color: var(--text); }
-    .btn-secondary:hover { background: #cbd5e1; }
-
-    /* PAINEL ADMIN */
-    .admin-card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .admin-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
-
-    .pet-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; flex-wrap: wrap; }
-    .pet-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-    .pet-item-info { flex: 1; min-width: 140px; }
-    .pet-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
-    .pet-item-info span { font-size: 0.8rem; color: var(--subtext); }
-    .pet-item-actions { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+    .btn-primary { background: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-wsp { background: var(--success); color: #ffffff; }
+    .btn-gps { background: var(--gps); color: #ffffff; }
 
     /* BOTÃO FLUTUANTE DE NOVO CADASTRO */
-    .fab {
-      position: fixed; right: 20px; bottom: 24px; width: 60px; height: 60px;
-      border-radius: 50%; border: 0; background: var(--primary); color: #fff;
-      font-size: 2rem; box-shadow: 0 10px 22px rgba(37,99,235,0.4); cursor: pointer; z-index: 99;
-      display: flex; align-items: center; justify-content: center;
+    .fab-btn {
+      position: fixed;
+      right: max(20px, calc(50% - 220px));
+      bottom: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 1.8rem;
+      border: none;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+      transition: transform 0.2s;
     }
+    .fab-btn:active { transform: scale(0.95); }
+
+    /* PÁGINA DO PET (VISUALIZAÇÃO PÚBLICA) */
+    .view-card {
+      background: var(--card-bg); border-radius: 24px; overflow: hidden;
+      border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;
+    }
+    .view-header-bg { height: 110px; background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .view-profile { padding: 0 20px 24px; }
+    .view-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; margin: -60px auto 12px; background: #dbeafe; display: block; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    .view-title { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+    .view-subtitle { font-size: 0.9rem; color: var(--subtext); margin-top: 4px; margin-bottom: 16px; }
+
+    .view-info-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 14px; text-align: left; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .view-info-item { display: flex; gap: 10px; align-items: flex-start; }
+    .view-info-item i { font-style: normal; font-size: 1.1rem; }
+    .view-info-item small { display: block; font-size: 0.75rem; color: var(--subtext); font-weight: 700; text-transform: uppercase; }
+    .view-info-item span { font-size: 0.9rem; font-weight: 600; color: var(--text); }
 
     /* MODAL DESLIZANTE (FORMULÁRIO) */
-    #sh { display: none; position: fixed; inset: 0; z-index: 100; }
-    #sh.open { display: block; }
-    .bd { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); }
-    .pn {
-      position: absolute; left: 0; right: 0; bottom: 0; max-width: 460px; margin: auto;
-      max-height: 90vh; overflow-y: auto; background: #fff; border-radius: 26px 26px 0 0;
-      padding: 24px 20px; animation: up .25s ease-out;
+    #modal-sheet { display: none; position: fixed; inset: 0; z-index: 100; }
+    #modal-sheet.open { display: block; }
+    .sheet-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.5); }
+    .sheet-body {
+      position: absolute; left: 0; right: 0; bottom: 0; max-width: 480px; margin: auto;
+      max-height: 88vh; overflow-y: auto; background: #ffffff; border-radius: 24px 24px 0 0;
+      padding: 24px 20px; animation: slideUp 0.25s ease-out;
     }
-    @keyframes up { from { transform: translateY(40px); opacity: 0; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .seg button { padding: 12px; border-radius: 14px; border: 2px solid var(--border); background: #fff; font-weight: 700; cursor: pointer; }
-    .seg button.on { border-color: var(--primary); background: #eff6ff; color: var(--primary-hover); }
-
-    .form-group { margin-bottom: 14px; text-align: left; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--subtext); text-transform: uppercase; }
-    .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; outline: none; background: #f8fafc; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--subtext); margin-bottom: 6px; text-transform: uppercase; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: #f8fafc; outline: none; }
     .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); background: #ffffff; }
 
-    .file-box { background: #f1f5f9; padding: 12px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; font-size: 0.85rem; }
-    .file-name { font-family: monospace; font-weight: 700; color: var(--primary); margin-top: 4px; word-break: break-all; }
+    .file-path-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+    .file-path-title { font-size: 0.75rem; font-weight: 700; color: #1e40af; text-transform: uppercase; }
+    .file-path-name { font-family: monospace; font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-top: 2px; word-break: break-all; }
 
-    pre { background: #0f172a; color: #38bdf8; padding: 14px; border-radius: 14px; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin-top: 8px; text-align: left; }
+    pre { background: #0f172a; color: #38bdf8; padding: 14px; border-radius: 12px; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin-top: 10px; }
 
-    #toast {
-      position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
-      background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 14px;
-      font-size: 0.9rem; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s;
-      max-width: 90%; text-align: center; font-weight: 600;
-    }
-    #toast.on { opacity: 1; }
+    #toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 14px; font-size: 0.88rem; font-weight: 600; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; text-align: center; max-width: 90%; }
+    #toast.show { opacity: 1; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="app-viewport">
 
-    <!-- CARTÃO DO PET (MODO PÚBLICO / NFC) -->
-    <div id="view-pet" class="pet-card hidden">
-      <div id="card-header-bg" class="pet-header-bg"></div>
-      <div class="pet-profile">
-        <div class="avatar-wrapper">
-          <img id="pet-foto" class="pet-avatar" src="" alt="Foto">
+    <!-- VISUALIZAÇÃO PÚBLICA DO PET (MODO NFC) -->
+    <div id="view-pet" class="view-card hidden">
+      <div class="view-header-bg"></div>
+      <div class="view-profile">
+        <img id="pet-foto" class="view-avatar" src="" alt="Foto do Pet">
+        <h1 id="pet-nome" class="view-title">Carregando...</h1>
+        <p id="pet-raca" class="view-subtitle">---</p>
+
+        <div class="view-info-box">
+          <div class="view-info-item"><i>👤</i><div><small>Tutor(a)</small><span id="pet-dono">---</span></div></div>
+          <div class="view-info-item"><i>🩺</i><div><small>Vacinas & Saúde</small><span id="pet-vacinas">---</span></div></div>
+          <div class="view-info-item"><i>📝</i><div><small>Observações</small><span id="pet-obs">---</span></div></div>
         </div>
 
-        <div id="badge-tipo" class="badge-status">Pet Encontrado</div>
-        
-        <h1 id="pet-nome" class="pet-name">Carregando...</h1>
-        <p id="pet-raca" class="pet-breed">---</p>
-
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-icon">👤</div>
-            <div class="info-content">
-              <div id="lbl-dono" class="info-label">Tutor(a)</div>
-              <div id="pet-dono" class="info-value">---</div>
-            </div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-icon">🩺</div>
-            <div class="info-content">
-              <div id="lbl-vacinas" class="info-label">Vacinas & Saúde</div>
-              <div id="pet-vacinas" class="info-value">---</div>
-            </div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-icon">📝</div>
-            <div class="info-content">
-              <div class="info-label">Observações</div>
-              <div id="pet-obs" class="info-value">---</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="action-buttons">
+        <div style="display:flex; flex-direction:column; gap:10px;">
           <a id="btn-wsp" href="#" class="btn btn-wsp" target="_blank">💬 Falar no WhatsApp</a>
-          <button id="btn-gps" class="btn btn-gps" onclick="enviarLocalizacao()">
-            <span id="txt-gps">📍 Enviar Minha Localização GPS</span>
-          </button>
-          <a id="btn-tel" href="#" class="btn btn-tel">📞 Ligar para o Contato</a>
-          <a href="./" class="btn btn-secondary" style="margin-top:10px;">← Voltar ao Painel</a>
+          <button id="btn-gps" class="btn btn-gps" onclick="enviarLocalizacao()"><span id="txt-gps">📍 Enviar Minha Localização GPS</span></button>
+          <a id="btn-tel" href="#" class="btn btn-primary">📞 Ligar para o Tutor</a>
+          <a href="./" class="btn btn-secondary" style="margin-top:6px;">← Voltar ao Painel</a>
         </div>
       </div>
     </div>
 
-    <!-- PAINEL DE GERENCIAMENTO (ADMIN) -->
+    <!-- PAINEL DE CONTROLE (ADMIN) -->
     <div id="view-admin" class="hidden">
-      <div class="admin-card">
-        <div class="admin-title">Cadastros Ativos</div>
-        <div id="lista-pets">
-          <p style="font-size:0.85rem; color:var(--subtext);">Carregando lista...</p>
+      <div class="header-app">
+        <div>
+          <h1>PET Tag NFC</h1>
+          <p id="total-cadastros">Carregando cadastros...</p>
         </div>
       </div>
-      <button class="fab" onclick="abrirFormulario()" title="Novo Cadastro">＋</button>
+
+      <div id="lista-pets"></div>
+
+      <button class="fab-btn" onclick="abrirFormulario()" title="Cadastrar Novo Pet">＋</button>
     </div>
 
   </div>
 
-  <!-- CONTAINER DO MODAL DESLIZANTE -->
-  <div id="sh"></div>
+  <!-- MODAL DE FORMULÁRIO -->
+  <div id="modal-sheet">
+    <div class="sheet-overlay" onclick="fecharFormulario()"></div>
+    <div class="sheet-body">
+      <h2 style="font-size:1.2rem; font-weight:800; margin-bottom:16px;">Cadastrar Novo Pet</h2>
+      
+      <div class="form-group">
+        <label>Nome do Pet:</label>
+        <input type="text" id="in-nome" placeholder="ex: Bob Marley" oninput="atualizarNomeArquivo(this.value)">
+      </div>
+
+      <div class="file-path-box">
+        <div class="file-path-title">📂 Criar arquivo no GitHub na pasta pets/:</div>
+        <div id="file-name-preview" class="file-path-name">pets/novo-pet.json</div>
+      </div>
+
+      <div class="form-group">
+        <label>Foto do Pet (Galeria):</label>
+        <input type="file" accept="image/*" onchange="converterImagemParaBase64(this)">
+        <input type="hidden" id="in-foto-base64">
+      </div>
+
+      <div class="form-group">
+        <label>Raça:</label>
+        <input type="text" id="in-raca" placeholder="ex: Vira-lata caramelo">
+      </div>
+
+      <div class="form-group">
+        <label>Nome do Tutor(a):</label>
+        <input type="text" id="in-dono" placeholder="ex: Dimas Galdino">
+      </div>
+
+      <div class="form-group">
+        <label>Telefone / WhatsApp (com DDD):</label>
+        <input type="text" id="in-telefone" placeholder="83998766020">
+      </div>
+
+      <div class="form-group">
+        <label>Vacinas & Saúde:</label>
+        <input type="text" id="in-vacinas" placeholder="ex: V10 em dia, Raiva OK">
+      </div>
+
+      <div class="form-group">
+        <label>Observações Importantes:</label>
+        <textarea id="in-obs" rows="2" placeholder="ex: Muito dócil. Alergia a salsicha."></textarea>
+      </div>
+
+      <button class="btn btn-wsp" style="width:100%; padding:14px;" onclick="salvarCadastro()">Gerar Código JSON</button>
+      <button class="btn btn-secondary" style="width:100%; margin-top:8px; padding:12px;" onclick="fecharFormulario()">Cancelar</button>
+
+      <div id="bloco-codigo" class="hidden" style="margin-top:16px;">
+        <p style="font-size:0.8rem; color:var(--subtext); font-weight:700;">Copie o código e cole no arquivo criado no GitHub:</p>
+        <pre id="codigo-gerado"></pre>
+        <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="copiarCodigo()">📋 Copiar JSON</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script>
-    const K = 'pettag_v1';
-    let S = { list: [] };
-    let cur = null, cid = null, ph = '', tp = 'pet';
+    // ARQUIVOS JSON REAIS CADASTRADOS NA PASTA pets/ DO SEU GITHUB
+    const petsCadastrados = ["bob", "thor", "luna", "max"];
 
-    // DADOS INICIAIS DE EXEMPLO
-    const DEMO = [
-      { id: 'bob', tipo: 'pet', nome: 'Bob Marley', raca: 'Vira-lata caramelo', dono: 'Dimas Galdino', telefone: '83998766020', vacinas: 'V10 e antirrábica em dia', observacoes: 'Muito dócil, mas tem medo de fogos. Alergia a salsicha.', foto: '' },
-      { id: 'mel', tipo: 'pet', nome: 'Mel', raca: 'Gata siamesa', dono: 'João Pereira', telefone: '83999990002', vacinas: 'V4 em dia, castrada', observacoes: 'Coleira azul com guizo.', foto: '' },
-      { id: 'lucas', tipo: 'crianca', nome: 'Lucas Almeida', raca: '6 anos, camiseta azul', dono: 'Ana Almeida (mãe)', telefone: '85999990003', vacinas: 'Alergia a amendoim', observacoes: 'Pode ficar assustado. Fique com ele até a família chegar.', foto: '' }
-    ];
-
-    // SUPORTE COMPLETO A ABAS ANÔNIMAS (TRY/CATCH LOCALSTORAGE)
-    try {
-      const saved = localStorage.getItem(K);
-      if (saved) {
-        S = JSON.parse(saved);
-      } else {
-        S.list = DEMO;
-        localStorage.setItem(K, JSON.stringify(S));
-      }
-    } catch(e) {
-      S.list = DEMO;
-    }
-
-    function salvarCache() {
-      try { localStorage.setItem(K, JSON.stringify(S)); } catch(e){}
-    }
-
-    let tt;
-    function toast(m) {
-      const t = document.getElementById('toast');
-      t.textContent = m;
-      t.className = 'on';
-      clearTimeout(tt);
-      tt = setTimeout(() => t.className = '', 3200);
-    }
-
-    const slug = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const tel = s => { const d = String(s || '').replace(/\D/g, ''); return d.startsWith('55') && d.length > 11 ? d.slice(2) : d; };
+    let telefonePetAtual = "";
+    let nomePetAtual = "";
 
     const params = new URLSearchParams(window.location.search);
     const petId = params.get('pet');
 
+    const slug = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const tel = s => { const d = String(s || '').replace(/\D/g, ''); return d.startsWith('55') && d.length > 11 ? d.slice(2) : d; };
+
+    function toast(m) {
+      const t = document.getElementById('toast');
+      t.textContent = m;
+      t.className = 'show';
+      setTimeout(() => t.className = '', 3000);
+    }
+
     if (petId) {
       document.getElementById('view-pet').classList.remove('hidden');
-      carregarPaginaPublica(petId);
+      carregarPet(petId);
     } else {
       document.getElementById('view-admin').classList.remove('hidden');
-      carregarPainel();
+      carregarListaAdmin();
     }
 
-    function carregarPaginaPublica(id) {
-      let pet = S.list.find(x => x.id === id.toLowerCase());
+    function carregarPet(id) {
+      fetch(`pets/${id.toLowerCase()}.json`)
+        .then(res => { if(!res.ok) throw new Error(); return res.json(); })
+        .then(pet => {
+          nomePetAtual = pet.nome;
+          telefonePetAtual = tel(pet.telefone);
 
-      if (pet) {
-        exibirDadosCard(pet);
-      } else {
-        fetch(`pets/${id.toLowerCase()}.json`)
-          .then(res => { if(!res.ok) throw new Error(); return res.json(); })
-          .then(data => exibirDadosCard(data))
-          .catch(() => {
-            document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Cadastro não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o arquivo <code>pets/${id}.json</code> existe no GitHub.</p><br><a href="./" class="btn btn-secondary">Voltar ao Painel</a></div>`;
-          });
-      }
+          document.getElementById('pet-nome').innerText = pet.nome;
+          document.getElementById('pet-raca').innerText = pet.raca || 'Sem raça definida';
+          document.getElementById('pet-foto').src = pet.foto || 'https://via.placeholder.com/150/dbeafe/2563eb?text=PET';
+          document.getElementById('pet-dono').innerText = pet.dono;
+          document.getElementById('pet-vacinas').innerText = pet.vacinas || 'Não informada';
+          document.getElementById('pet-obs').innerText = pet.observacoes || 'Nenhuma';
+
+          const msgWsp = `Olá! Encontrei o pet ${pet.nome} pertencente a ${pet.dono}. Gostaria de combinar a entrega!`;
+          document.getElementById('btn-wsp').href = `https://wa.me/55${telefonePetAtual}?text=${encodeURIComponent(msgWsp)}`;
+          document.getElementById('btn-tel').href = `tel:${telefonePetAtual}`;
+        })
+        .catch(() => {
+          document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Pet não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o arquivo <code>pets/${id}.json</code> existe no GitHub.</p><br><a href="./" class="btn btn-secondary">Voltar ao Painel</a></div>`;
+        });
     }
 
-    function exibirDadosCard(pet) {
-      cur = pet;
-      const isCrianca = pet.tipo === 'crianca';
-      const tPhone = tel(pet.telefone);
-
-      document.getElementById('pet-nome').innerText = pet.nome;
-      document.getElementById('pet-raca').innerText = pet.raca || (isCrianca ? 'Idade/Descrição não informada' : 'Sem raça definida');
-      document.getElementById('pet-foto').src = pet.foto || (isCrianca ? 'https://via.placeholder.com/150/ffedd5/c2410c?text=Criança' : 'https://via.placeholder.com/150/dbeafe/1d4ed8?text=Pet');
-      document.getElementById('pet-dono').innerText = pet.dono;
-      document.getElementById('pet-vacinas').innerText = pet.vacinas || 'Não informada';
-      document.getElementById('pet-obs').innerText = pet.observacoes || 'Nenhuma';
-
-      document.getElementById('badge-tipo').innerText = isCrianca ? 'Criança Encontrada' : 'Pet Encontrado';
-      document.getElementById('lbl-dono').innerText = isCrianca ? 'Responsável' : 'Tutor(a)';
-      document.getElementById('lbl-vacinas').innerText = isCrianca ? 'Saúde e Alergias' : 'Vacinas & Saúde';
-
-      if (isCrianca) {
-        document.getElementById('card-header-bg').classList.add('crianca');
-      }
-
-      const msgWsp = isCrianca 
-        ? `Olá, ${pet.dono}! Encontrei ${pet.nome} e está comigo em segurança. Gostaria de combinar o encontro!`
-        : `Olá! Encontrei o pet ${pet.nome} pertencente a ${pet.dono}. Gostaria de combinar a entrega!`;
-
-      document.getElementById('btn-wsp').href = `https://wa.me/55${tPhone}?text=${encodeURIComponent(msgWsp)}`;
-      document.getElementById('btn-tel').href = `tel:${tPhone}`;
-    }
-
-    function carregarPainel() {
+    function carregarListaAdmin() {
       const container = document.getElementById('lista-pets');
       const baseUrl = window.location.origin + window.location.pathname;
       container.innerHTML = '';
 
-      if (!S.list.length) {
-        container.innerHTML = '<p style="font-size:0.85rem; color:var(--subtext);">Nenhum cadastro atalho no painel. Clique no ＋ para criar.</p>';
-        return;
-      }
+      document.getElementById('total-cadastros').innerText = `${petsCadastrados.length} pets cadastrados`;
 
-      S.list.forEach(pet => {
-        const linkNfc = `${baseUrl}?pet=${pet.id}`;
-        const isCrianca = pet.tipo === 'crianca';
-        const html = `
-          <div class="pet-item">
-            <img src="${pet.foto || (isCrianca ? 'https://via.placeholder.com/50/ffedd5/c2410c?text=🧒' : 'https://via.placeholder.com/50/dbeafe/1d4ed8?text=🐾')}" alt="${pet.nome}">
-            <div class="pet-item-info">
-              <strong>${pet.nome} (${pet.id})</strong>
-              <span>${isCrianca ? 'Resp:' : 'Tutor:'} ${pet.dono}</span>
-            </div>
-            <div class="pet-item-actions">
-              <a href="?pet=${pet.id}" class="btn btn-tel" style="padding:8px 12px; font-size:0.8rem; flex:1;">Ver Cartão</a>
-              <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')" style="padding:8px 12px; font-size:0.8rem; flex:1;">Copiar Link</button>
-            </div>
-          </div>
-        `;
-        container.innerHTML += html;
+      petsCadastrados.forEach(id => {
+        fetch(`pets/${id}.json`)
+          .then(res => res.json())
+          .then(pet => {
+            const linkNfc = `${baseUrl}?pet=${id}`;
+            const html = `
+              <div class="pet-card-item">
+                <div class="pet-info-row">
+                  <img class="pet-avatar-thumb" src="${pet.foto || 'https://via.placeholder.com/56/dbeafe/2563eb?text=🐾'}" alt="${pet.nome}">
+                  <div class="pet-details">
+                    <strong>${pet.nome} (${id})</strong>
+                    <span>Tutor: ${pet.dono}</span>
+                  </div>
+                </div>
+                <div class="pet-item-actions">
+                  <a href="?pet=${id}" class="btn btn-primary">Ver Cartão</a>
+                  <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')">Copiar Link</button>
+                </div>
+              </div>
+            `;
+            container.innerHTML += html;
+          })
+          .catch(() => {
+            // Se algum arquivo ainda não existir no GitHub
+          });
       });
     }
 
@@ -381,84 +329,39 @@
       toast("Link copiado para a Tag NFC!");
     }
 
-    // ABRIR FORMULÁRIO EM MODAL DESLIZANTE
-    function abrirFormulario(id) {
-      const pet = id ? S.list.find(x => x.id === id) : { tipo: 'pet', nome: '', raca: '', dono: '', telefone: '', vacinas: '', observacoes: '', foto: '' };
-      cid = id;
-      tp = pet.tipo || 'pet';
-      ph = pet.foto || '';
-
-      const sheet = document.getElementById('sh');
-      sheet.innerHTML = `
-        <div class="bd" onclick="fecharFormulario()"></div>
-        <div class="pn">
-          <h2 style="margin-bottom:14px; font-size:1.2rem;">${id ? 'Editar Cadastro' : 'Novo Cadastro'}</h2>
-          
-          <div class="seg">
-            <button class="${tp === 'pet' ? 'on' : ''}" onclick="alternarTipo('pet')">🐾 Pet</button>
-            <button class="${tp === 'crianca' ? 'on' : ''}" onclick="alternarTipo('crianca')">🧒 Criança</button>
-          </div>
-
-          <div class="form-group">
-            <label>Nome:</label>
-            <input type="text" id="in-nome" value="${pet.nome}" placeholder="ex: Bob Marley" oninput="atualizarNomeArquivo(this.value)">
-          </div>
-
-          <div class="file-box">
-            <div style="font-weight:700; color:var(--primary);">📂 Nome do Arquivo no GitHub:</div>
-            <div id="file-name-preview" class="file-name">pets/${cid || slug(pet.nome || 'nome-do-cadastro')}.json</div>
-          </div>
-
-          <div class="form-group">
-            <label>${tp === 'crianca' ? 'Idade / Descrição:' : 'Raça:'}</label>
-            <input type="text" id="in-raca" value="${pet.raca}" placeholder="${tp === 'crianca' ? 'ex: 6 anos, camiseta azul' : 'ex: Vira-lata'}">
-          </div>
-
-          <div class="form-group">
-            <label>${tp === 'crianca' ? 'Responsável:' : 'Nome do Tutor(a):'}</label>
-            <input type="text" id="in-dono" value="${pet.dono}" placeholder="ex: Dimas Galdino">
-          </div>
-
-          <div class="form-group">
-            <label>WhatsApp (com DDD):</label>
-            <input type="text" id="in-telefone" value="${pet.telefone}" placeholder="83998766020">
-          </div>
-
-          <div class="form-group">
-            <label>${tp === 'crianca' ? 'Saúde e Alergias:' : 'Vacinas & Saúde:'}</label>
-            <input type="text" id="in-vacinas" value="${pet.vacinas}" placeholder="${tp === 'crianca' ? 'ex: Alergia a amendoim' : 'ex: V10 em dia'}">
-          </div>
-
-          <div class="form-group">
-            <label>Observações Importantes:</label>
-            <textarea id="in-obs" rows="2" placeholder="ex: Muito dócil.">${pet.observacoes}</textarea>
-          </div>
-
-          <button class="btn btn-wsp" onclick="salvarCadastro()">Salvar e Gerar Código JSON</button>
-          <button class="btn btn-secondary" onclick="fecharFormulario()" style="margin-top:8px;">Cancelar</button>
-
-          <div id="bloco-json" class="hidden" style="margin-top:16px;">
-            <p style="font-size:0.8rem; color:var(--subtext); font-weight:700;">Copie o código abaixo e crie o arquivo na pasta <code>pets/</code> do GitHub:</p>
-            <pre id="codigo-json"></pre>
-            <button class="btn btn-tel" onclick="copiarJson()" style="margin-top:8px;">📋 Copiar Código JSON</button>
-          </div>
-        </div>
-      `;
-      sheet.classList.add('open');
+    function abrirFormulario() {
+      document.getElementById('modal-sheet').classList.add('open');
     }
 
     function fecharFormulario() {
-      document.getElementById('sh').classList.remove('open');
-    }
-
-    function alternarTipo(tipo) {
-      tp = tipo;
-      abrirFormulario(cid);
+      document.getElementById('modal-sheet').classList.remove('open');
     }
 
     function atualizarNomeArquivo(val) {
-      const fileName = cid || slug(val || 'nome-do-cadastro');
+      const fileName = slug(val || 'novo-pet');
       document.getElementById('file-name-preview').innerText = `pets/${fileName}.json`;
+    }
+
+    function converterImagemParaBase64(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 300;
+            const scale = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            document.getElementById('in-foto-base64').value = canvas.toDataURL('image/jpeg', 0.7);
+          }
+        }
+        reader.readAsDataURL(file);
+      }
     }
 
     function salvarCadastro() {
@@ -467,71 +370,57 @@
       const telefone = tel(document.getElementById('in-telefone').value);
 
       if (!nome || !dono || telefone.length < 10) {
-        toast("Preencha Nome, Responsável e WhatsApp com DDD!");
+        toast("Preencha Nome, Tutor e WhatsApp com DDD!");
         return;
       }
 
-      const id = cid || slug(nome);
-      const novoObjeto = {
-        tipo: tp,
+      const fileSlug = slug(nome);
+      const foto = document.getElementById('in-foto-base64').value || '';
+
+      const petObj = {
         nome: nome,
         raca: document.getElementById('in-raca').value.trim(),
+        foto: foto,
         dono: dono,
         telefone: telefone,
         vacinas: document.getElementById('in-vacinas').value.trim(),
-        observacoes: document.getElementById('in-obs').value.trim(),
-        foto: ph
+        observacoes: document.getElementById('in-obs').value.trim()
       };
 
-      const idx = S.list.findIndex(x => x.id === id);
-      if (idx >= 0) {
-        S.list[idx] = { id, ...novoObjeto };
-      } else {
-        S.list.unshift({ id, ...novoObjeto });
-      }
-
-      salvarCache();
-      carregarPainel();
-
-      const jsonString = JSON.stringify(novoObjeto, null, 2);
-      document.getElementById('codigo-json').innerText = jsonString;
-      document.getElementById('bloco-json').classList.remove('hidden');
-
-      toast("Cadastro salvo no navegador!");
+      document.getElementById('codigo-gerado').innerText = JSON.stringify(petObj, null, 2);
+      document.getElementById('bloco-codigo').classList.remove('hidden');
+      toast("JSON gerado com sucesso!");
     }
 
-    function copiarJson() {
-      const code = document.getElementById('codigo-json').innerText;
+    function copiarCodigo() {
+      const code = document.getElementById('codigo-gerado').innerText;
       navigator.clipboard.writeText(code);
-      toast("Código JSON copiado!");
+      toast("JSON copiado!");
     }
 
     function enviarLocalizacao() {
-      const btnText = document.getElementById('txt-gps');
-      btnText.innerText = "Obtendo GPS...";
+      const btnGpsText = document.getElementById('txt-gps');
+      btnGpsText.innerText = "Obtendo GPS...";
 
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            btnText.innerText = "Enviar Minha Localização GPS";
+            btnGpsText.innerText = "Enviar Minha Localização GPS";
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const linkMaps = `https://maps.google.com/?q=${lat},${lng}`;
-            const isCrianca = cur && cur.tipo === 'crianca';
-            const msg = isCrianca 
-              ? `Olá! Encontrei ${cur.nome}! Minha localização atual é: ${linkMaps}`
-              : `Olá! Encontrei o pet ${cur.nome}! Minha localização atual é: ${linkMaps}`;
-            window.open(`https://wa.me/55${tel(cur.telefone)}?text=${encodeURIComponent(msg)}`, '_blank');
+            const msg = `Olá! Encontrei o pet ${nomePetAtual}! Minha localização atual é: ${linkMaps}`;
+            window.open(`https://wa.me/55${telefonePetAtual}?text=${encodeURIComponent(msg)}`, '_blank');
           },
-          (error) => {
-            btnText.innerText = "Enviar Minha Localização GPS";
-            toast("Ative a localização no seu navegador.");
+          () => {
+            btnGpsText.innerText = "Enviar Minha Localização GPS";
+            toast("Ative a localização no celular.");
           },
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
-        btnText.innerText = "Enviar Minha Localização GPS";
-        toast("Navegador sem suporte a GPS.");
+        btnGpsText.innerText = "Enviar Minha Localização GPS";
+        toast("Sem suporte a GPS no navegador.");
       }
     }
   </script>
