@@ -27,7 +27,7 @@ main{padding:16px}
 .tag{font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:50px;background:#dbeafe;color:var(--ph)}
 .tag.crianca{background:#ffedd5;color:#c2410c}
 .empty{text-align:center;color:var(--s);padding:40px 10px}
-.fab{position:fixed;right:max(20px,calc(50% - 240px));bottom:calc(24px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;border:0;background:var(--p);color:#fff;font-size:2rem;box-shadow:0 10px 22px #2563eb55;cursor:pointer}
+.fab{position:fixed;right:max(20px,calc(50% - 240px));bottom:calc(24px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;border:0;background:var(--p);color:#fff;font-size:2rem;box-shadow:0 10px 22px #2563eb55;cursor:pointer;z-index:5}
 #sh{display:none;position:fixed;inset:0;z-index:10}#sh.open{display:block}
 .bd{position:absolute;inset:0;background:#0f172a80}
 .pn{position:absolute;left:0;right:0;bottom:0;max-width:520px;margin:auto;max-height:92vh;overflow:auto;background:#fff;border-radius:26px 26px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));animation:up .25s}
@@ -38,7 +38,7 @@ main{padding:16px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
 .dh{display:flex;align-items:center;gap:14px;margin-bottom:14px}.dh img{width:68px;height:68px;border-radius:50%;object-fit:cover}
 .dh b{font-size:1.15rem;display:block}.dh small,.hint{color:var(--s);font-size:.8rem;line-height:1.4}
-.lk{background:#f8fafc;border:1px solid var(--b);border-radius:12px;padding:10px 12px;font-size:.8rem;word-break:break-all;margin:6px 0 4px}
+.lk{background:#f8fafc;border:1px solid var(--b);border-radius:12px;padding:10px 12px;font-size:.8rem;word-break:break-all;margin:6px 0 4px;font-family:monospace;color:var(--p)}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .seg button{padding:12px;border-radius:14px;border:2px solid var(--b);background:#fff;font-weight:700;font-size:.95rem;cursor:pointer}
 .seg button.on{border-color:var(--p);background:#eff6ff;color:var(--ph)}
@@ -78,11 +78,19 @@ const DEMO=()=>[
 
 let S={list:[],base:''}, cur, cid, ph='', tp='pet', filt='all', qs='';
 
-try{S=JSON.parse(localStorage.getItem(K))||S}catch(e){}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Sem espaço para salvar. Use fotos menores.')}};
+try{
+  const stored = localStorage.getItem(K);
+  S = stored ? JSON.parse(stored) : {list: DEMO(), base: '', seeded: 1};
+}catch(e){
+  S = {list: DEMO(), base: '', seeded: 1};
+}
+
+const save=()=>{
+  try{ localStorage.setItem(K, JSON.stringify(S)); }catch(e){}
+};
 
 let tt;
-const toast=m=>{const t=$('toast');t.textContent=m;t.className='on';clearTimeout(tt);tt=setTimeout(()=>t.className='',3200)};
+const toast=m=>{const t=$('toast');if(!t)return;t.textContent=m;t.className='on';clearTimeout(tt);tt=setTimeout(()=>t.className='',3200)};
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const tel=s=>{const d=String(s||'').replace(/\D/g,'');return d.startsWith('55')&&d.length>11?d.slice(2):d};
 const av=r=>r.foto||'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#dbeafe"/><text x="50" y="68" font-size="54" text-anchor="middle">${r.emoji||(r.tipo=='crianca'?'🧒':'🐾')}</text></svg>`);
@@ -102,7 +110,7 @@ function msg(r,loc){
 const wa=(r,loc)=>`https://wa.me/55${tel(r.telefone)}?text=${encodeURIComponent(msg(r,loc))}`;
 
 function admin(){
-  if(!S.seeded){S.list=DEMO();S.seeded=1;save()}
+  if(!S.list || !S.list.length){S.list=DEMO();S.seeded=1;save()}
   $('app').style.padding='';$('app').innerHTML=`<header class="hd"><div><h1>PET Tag NFC</h1><p>${S.list.length} cadastro(s)</p></div><button class="ic" onclick="cfg()" aria-label="Configurações">⚙️</button></header>
   <main><input id="bq" class="in" placeholder="🔍 Buscar por nome ou responsável" oninput="qs=this.value;lst()">
   <div class="chips">${[['all','Todos'],['pet','Pets'],['crianca','Crianças']].map(([k,t])=>`<button class="chip ${filt==k?'on':''}" onclick="filt='${k}';admin()">${t}</button>`).join('')}</div><div id="lst"></div></main>
@@ -174,11 +182,15 @@ function fm(r,id){
   <div class="pf"><img id="pv" src="${av({...r,foto:ph})}" alt=""><div><button class="b" style="margin:0 0 8px" onclick="$('f1').click()">🖼 Escolher da galeria</button><button class="b" style="margin:0" onclick="$('f2').click()">📷 Tirar foto</button></div></div>
   <input type="file" id="f1" accept="image/*" hidden onchange="img(this)"><input type="file" id="f2" accept="image/*" capture="environment" hidden onchange="img(this)">
   ${f('nome','Nome','ex: Bob Marley')}${f('raca',l.raca,tp=='pet'?'ex: Vira-lata caramelo':'ex: 6 anos, camiseta azul')}${f('dono',l.dono,'ex: Carla Menezes')}${f('telefone','WhatsApp com DDD','11999990001')}${f('vacinas',l.vacinas,tp=='pet'?'ex: V10 em dia':'ex: alergia a amendoim')}${f('observacoes','Observações importantes','ex: Muito dócil, tem medo de fogos')}
-  <div class="hint" style="margin-bottom:4px">Crie um arquivo na pasta <code>pets/</code> com este nome no GitHub:</div>
-  <div id="file-name-preview" class="lk">pets/${cid || slug(r.nome||'nome-do-pet')}.json</div>
+  
+  <div style="background:#f1f5f9;padding:12px;border-radius:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
+    <div class="hint" style="font-weight:700;color:#2563eb;">📂 Arquivo do GitHub a ser criado:</div>
+    <div id="file-name-preview" class="lk" style="margin-top:4px;">pets/${cid || slug(r.nome||'nome-do-pet')}.json</div>
+  </div>
+
   <button class="b ok" onclick="sv()">Salvar cadastro</button><button class="b" onclick="closeSh()">Cancelar</button>
   <div id="json-block" style="display:none;margin-top:12px">
-    <div class="hint">Copie o JSON abaixo para criar o arquivo:</div>
+    <div class="hint">Copie o JSON abaixo e cole no arquivo criado:</div>
     <pre id="json-preview"></pre>
     <button class="b p" onclick="copyJson()">📋 Copiar código JSON</button>
   </div>`);
@@ -234,7 +246,7 @@ function sv(){
   save();
   
   $('json-preview').innerText = JSON.stringify(pure(o), null, 2);$('json-block').style.display = 'block';
-  toast('Cadastro salvo! Crie o arquivo na pasta pets/ do GitHub.');
+  toast('Cadastro salvo!');
 }
 
 function copyJson(){
@@ -245,12 +257,11 @@ function copyJson(){
 
 function cfg(){
   sheet(`<h2>Configurações</h2>
-  <div class="fg"><label>Endereço do seu site (GitHub Pages)</label><input id="cb" class="in" value="${esc(S.base)}" placeholder="https://seuusuario.github.io/pet-tag/"><p class="hint" style="margin-top:6px">Os links e as tags usam este endereço. Para gravar NFC, abra o painel por ele, em HTTPS, no Chrome do Android.</p></div>
+  <div class="fg"><label>Endereço do seu site (GitHub Pages / Vercel)</label><input id="cb" class="in" value="${esc(S.base)}" placeholder="https://seu-app.vercel.app/"><p class="hint" style="margin-top:6px">Os links e as tags usam este endereço.</p></div>
   <button class="b p" onclick="S.base=$('cb').value.trim();save();closeSh();toast('Endereço salvo')">Salvar endereço</button>
   <button class="b" onclick="dl('pet-tag-backup.json',JSON.stringify(S.list))">💾 Exportar backup</button>
   <button class="b" onclick="$('imp').click()">📂 Importar backup</button><input type="file" id="imp" accept=".json" hidden onchange="imp(this)">
-  <button class="b" onclick="DEMO().forEach(d=>{if(!S.list.some(x=>x.id==d.id))S.list.push(d)});save();closeSh();admin();toast('Exemplos restaurados')">🐾 Restaurar exemplos fictícios</button>
-  <p class="hint" style="margin-top:10px">Os cadastros ficam salvos neste aparelho. Faça backup antes de trocar de celular ou limpar o navegador.</p>`);
+  <button class="b" onclick="DEMO().forEach(d=>{if(!S.list.some(x=>x.id==d.id))S.list.push(d)});save();closeSh();admin();toast('Exemplos restaurados')">🐾 Restaurar exemplos fictícios</button>`);
 }
 
 function imp(i){
@@ -297,7 +308,7 @@ function gps(){
 function pub(){
   const id=(q.get('pet')||'').toLowerCase(), d=H.get('d');
   let p=null;
-  if(d){try{p=dec(d)}catch(e){}}else p=S.list.find(x=>x.id==id);
+  if(d){try{p=dec(d)}catch(e){}}else p=(S.list||[]).find(x=>x.id==id);
   if(p)return card(p);
   if(d)return nf();
   fetch('pets/'+encodeURIComponent(id)+'.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(card).catch(nf);
