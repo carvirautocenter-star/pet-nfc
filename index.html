@@ -124,7 +124,7 @@
 
     .info-icon {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
       width: 36px;
       height: 36px;
       border-radius: 10px;
@@ -182,6 +182,12 @@
     .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     
     .preview-img-upload { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-top: 10px; border: 2px dashed var(--border); display: block; }
+
+    .pet-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; }
+    .pet-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+    .pet-item-info { flex: 1; }
+    .pet-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
+    .pet-item-info span { font-size: 0.8rem; color: var(--subtext); }
 
     pre { background: #0f172a; color: #38bdf8; padding: 16px; border-radius: 14px; overflow-x: auto; font-size: 0.8rem; text-align: left; margin-top: 12px; white-space: pre-wrap; word-break: break-all; }
     .hidden { display: none !important; }
@@ -255,16 +261,26 @@
       </div>
     </div>
 
-    <!-- PAINEL GERADOR DE ARQUIVOS (ADMIN) -->
+    <!-- PAINEL GERENCIADOR (ADMIN) -->
     <div id="view-admin" class="hidden">
+      
+      <!-- LISTA DOS PETS CADASTRADOS -->
+      <div class="admin-card">
+        <div class="admin-title">Pets Cadastrados</div>
+        <div id="lista-pets">
+          <p style="font-size:0.85rem; color:var(--subtext);">A carregar lista de pets...</p>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO DE NOVO CADASTRO -->
       <div class="admin-card">
         <div class="admin-title">Cadastrar Novo Pet</div>
         <p style="font-size:0.85rem; color:var(--subtext); margin-bottom:16px;">
-          Preencha os dados abaixo para gerar o arquivo <code>.json</code>. Depois, crie um arquivo com esse código dentro da pasta <code>pets/</code> no seu GitHub.
+          Preencha os dados abaixo para gerar o ficheiro <code>.json</code>. Depois, crie o ficheiro dentro da pasta <code>pets/</code> no GitHub.
         </p>
         <form id="form-pet" onsubmit="gerarArquivoJson(event)">
           <div class="form-group">
-            <label>ID / Nome do Arquivo (ex: bob):</label>
+            <label>ID / Nome do Ficheiro (ex: bob):</label>
             <input type="text" id="in-id" required placeholder="ex: bob">
           </div>
           
@@ -291,7 +307,7 @@
           </div>
 
           <div class="form-group">
-            <label>Telefone / WhatsApp (Apenas DDD e número):</label>
+            <label>Telefone / WhatsApp (Com DDD):</label>
             <input type="text" id="in-telefone" required placeholder="83998766020">
           </div>
 
@@ -305,22 +321,26 @@
             <textarea id="in-obs" rows="2" placeholder="ex: Muito dócil. Alergia a salsicha."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-wsp">Gerar Conteúdo do Arquivo JSON</button>
+          <button type="submit" class="btn btn-wsp">Gerar Código JSON para o GitHub</button>
         </form>
 
         <div id="bloco-codigo" class="hidden">
           <p style="font-size:0.85rem; color:var(--subtext); margin-top:16px;">
-            Copie o código abaixo e crie um arquivo chamado <code id="nome-arquivo-sugerido">pet.json</code> dentro da pasta <code>pets/</code> no GitHub:
+            Copie o código abaixo e crie um ficheiro chamado <code id="nome-arquivo-sugerido">pet.json</code> na pasta <code>pets/</code> no GitHub:
           </p>
           <pre id="codigo-gerado"></pre>
           <button class="btn btn-secondary" onclick="copiarCodigo()" style="margin-top:8px;">Copiar JSON</button>
         </div>
       </div>
+
     </div>
 
   </div>
 
   <script>
+    // LISTA DE PETS REGISTADOS (Adicione o ID do ficheiro aqui para aparecer na lista do painel)
+    const listaPetsRegistados = ["bob", "thor"];
+
     let telefonePetAtual = "";
     let nomePetAtual = "";
 
@@ -330,7 +350,6 @@
     if (petId) {
       document.getElementById('view-pet').classList.remove('hidden');
 
-      // Busca automaticamente o arquivo de dados na pasta pets/
       fetch(`pets/${petId.toLowerCase()}.json`)
         .then(response => {
           if (!response.ok) throw new Error("Pet não encontrado");
@@ -340,7 +359,6 @@
           nomePetAtual = pet.nome;
           telefonePetAtual = pet.telefone.replace(/\D/g, '');
 
-          // Trata se o telefone já veio gravado com 55 no início
           if (telefonePetAtual.startsWith('55') && telefonePetAtual.length > 11) {
             telefonePetAtual = telefonePetAtual.substring(2);
           }
@@ -355,12 +373,47 @@
           document.getElementById('btn-wsp').href = `https://wa.me/55${telefonePetAtual}?text=Olá! Encontrei o pet ${pet.nome}!`;
           document.getElementById('btn-tel').href = `tel:${telefonePetAtual}`;
         })
-        .catch(err => {
-          document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Pet não localizado</h2><p style="margin-top:8px; color:#64748b;">Certifique-se de que o arquivo <code>pets/${petId}.json</code> existe no GitHub.</p></div>`;
+        .catch(() => {
+          document.getElementById('view-pet').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;"><h2>Pet não localizado</h2><p style="margin-top:8px; color:#64748b;">Verifique se o ficheiro <code>pets/${petId}.json</code> existe no GitHub.</p></div>`;
         });
 
     } else {
       document.getElementById('view-admin').classList.remove('hidden');
+      carregarListaAdmin();
+    }
+
+    // CARREGA VISUALMENTE A LISTA DE PETS NO PAINEL ADMIN
+    function carregarListaAdmin() {
+      const container = document.getElementById('lista-pets');
+      const baseUrl = window.location.origin + window.location.pathname;
+      container.innerHTML = '';
+
+      listaPetsRegistados.forEach(id => {
+        fetch(`pets/${id}.json`)
+          .then(res => res.json())
+          .then(pet => {
+            const linkNfc = `${baseUrl}?pet=${id}`;
+            const html = `
+              <div class="pet-item">
+                <img src="${pet.foto || 'https://via.placeholder.com/50'}" alt="${pet.nome}">
+                <div class="pet-item-info">
+                  <strong>${pet.nome} (${id})</strong>
+                  <span>Tutor: ${pet.dono}</span>
+                </div>
+                <button class="btn btn-secondary" onclick="copiarLink('${linkNfc}')" style="width:auto; padding:8px 12px; font-size:0.8rem;">Copiar Link</button>
+              </div>
+            `;
+            container.innerHTML += html;
+          })
+          .catch(() => {
+            // Se o ficheiro ainda não existir no GitHub, apenas ignora
+          });
+      });
+    }
+
+    function copiarLink(link) {
+      navigator.clipboard.writeText(link);
+      alert("Link copiado para a gravação da Tag NFC!");
     }
 
     function converterImagemParaBase64(input) {
@@ -439,7 +492,7 @@
     function copiarCodigo() {
       const codigo = document.getElementById('codigo-gerado').innerText;
       navigator.clipboard.writeText(codigo);
-      alert("JSON copiado! Crie o arquivo na pasta pets/ do GitHub e cole.");
+      alert("JSON copiado! Crie o ficheiro na pasta pets/ do GitHub e cole.");
     }
   </script>
 </body>
