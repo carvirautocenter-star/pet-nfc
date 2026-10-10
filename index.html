@@ -193,7 +193,7 @@
 
   <div class="container">
 
-    <!-- CARTÃO DO PET (MODO NFC OU CLIQUE DIRETO) -->
+    <!-- CARTÃO DO PET (MODO NFC) -->
     <div id="view-pet" class="pet-card hidden">
       <div class="pet-header-bg"></div>
       <div class="pet-profile">
@@ -246,7 +246,7 @@
 
           <button id="btn-gps" class="btn btn-gps" onclick="enviarLocalizacao()">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
-            Enviar Minha Localização GPS
+            <span id="txt-gps">Enviar Minha Localização GPS</span>
           </button>
 
           <a id="btn-tel" href="#" class="btn btn-tel">
@@ -263,20 +263,17 @@
 
     <!-- PAINEL DE GERENCIAMENTO (ADMIN) -->
     <div id="view-admin" class="hidden">
-      
-      <!-- LISTA DE PETS -->
       <div class="admin-card">
         <div class="admin-title">Pets Cadastrados</div>
         <div id="lista-pets">
-          <p style="font-size:0.85rem; color:var(--subtext);">Buscando pets na pasta...</p>
+          <p style="font-size:0.85rem; color:var(--subtext);">Buscando pets cadastrados...</p>
         </div>
       </div>
 
-      <!-- FORMULÁRIO DE NOVO CADASTRO -->
       <div class="admin-card">
         <div class="admin-title">Cadastrar Novo Pet</div>
         <p style="font-size:0.85rem; color:var(--subtext); margin-bottom:16px;">
-          Preencha os dados abaixo para gerar o arquivo <code>.json</code>. Depois crie o arquivo dentro da pasta <code>pets/</code> no GitHub.
+          Preencha os dados abaixo para gerar o arquivo <code>.json</code>.
         </p>
         <form id="form-pet" onsubmit="gerarArquivoJson(event)">
           <div class="form-group">
@@ -332,17 +329,17 @@
           <button class="btn btn-secondary" onclick="copiarCodigo()" style="margin-top:8px;">Copiar JSON</button>
         </div>
       </div>
-
     </div>
 
   </div>
 
   <script>
-    // LISTA DE PETS (Coloque o nome dos arquivos que você criou aqui)
-    const petsCadastrados = ["bob", "thor"];
+    // LISTA DE PETS (Adicione o ID dos novos arquivos aqui)
+    const petsCadastrados = ["bob"];
 
     let telefonePetAtual = "";
     let nomePetAtual = "";
+    let donoPetAtual = "";
 
     const params = new URLSearchParams(window.location.search);
     const petId = params.get('pet');
@@ -357,6 +354,7 @@
         })
         .then(pet => {
           nomePetAtual = pet.nome;
+          donoPetAtual = pet.dono;
           telefonePetAtual = pet.telefone.replace(/\D/g, '');
 
           if (telefonePetAtual.startsWith('55') && telefonePetAtual.length > 11) {
@@ -370,7 +368,8 @@
           document.getElementById('pet-vacinas').innerText = pet.vacinas || 'Não informada';
           document.getElementById('pet-obs').innerText = pet.observacoes || 'Nenhuma';
 
-          document.getElementById('btn-wsp').href = `https://wa.me/55${telefonePetAtual}?text=Olá! Encontrei o pet ${pet.nome}!`;
+          const msgWhatsapp = `Olá! Encontrei o pet ${pet.nome} pertencente a ${pet.dono}. Gostaria de combinar a entrega!`;
+          document.getElementById('btn-wsp').href = `https://wa.me/55${telefonePetAtual}?text=${encodeURIComponent(msgWhatsapp)}`;
           document.getElementById('btn-tel').href = `tel:${telefonePetAtual}`;
         })
         .catch(() => {
@@ -382,7 +381,6 @@
       carregarPetsNoPainel();
     }
 
-    // CARREGA OS CARDS E BOTÕES "VER CARTÃO" E "COPIAR LINK"
     function carregarPetsNoPainel() {
       const container = document.getElementById('lista-pets');
       const baseUrl = window.location.origin + window.location.pathname;
@@ -407,9 +405,6 @@
               </div>
             `;
             container.innerHTML += html;
-          })
-          .catch(() => {
-            // Se o arquivo ainda não existir no GitHub, apenas ignora
           });
       });
     }
@@ -449,19 +444,33 @@
       }
     }
 
+    // GEOLOCALIZAÇÃO OTIMIZADA COM DISPARO DIRETO
     function enviarLocalizacao() {
+      const btnGpsText = document.getElementById('txt-gps');
+      btnGpsText.innerText = "Obtendo GPS...";
+
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            btnGpsText.innerText = "Enviar Minha Localização GPS";
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const linkMaps = `https://maps.google.com/?q=${lat},${lng}`;
             const msg = `Olá! Encontrei o pet ${nomePetAtual}! Minha localização atual é: ${linkMaps}`;
             window.open(`https://wa.me/55${telefonePetAtual}?text=${encodeURIComponent(msg)}`, '_blank');
           },
-          () => alert("Por favor, ative e permita o acesso à sua localização no celular.")
+          (error) => {
+            btnGpsText.innerText = "Enviar Minha Localização GPS";
+            if(error.code === error.PERMISSION_DENIED) {
+              alert("Acesso ao GPS foi negado no seu navegador. Ative a permissão de localização para o site nas configurações do celular.");
+            } else {
+              alert("Não foi possível obter a localização. Verifique se o GPS do seu celular está ativo.");
+            }
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
       } else {
+        btnGpsText.innerText = "Enviar Minha Localização GPS";
         alert("Seu navegador não suporta geolocalização.");
       }
     }
